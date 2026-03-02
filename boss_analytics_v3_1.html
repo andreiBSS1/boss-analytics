@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOSS Security Screens — Analytics Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<style>
+:root {
+  --bg:      #0a0a0a;
+  --s1:      #111111;
+  --s2:      #181818;
+  --s3:      #222222;
+  --border:  #2e2e2e;
+  --border2: #3a3a3a;
+  --text:    #f0f0f0;
+  --muted:   #888888;
+  --dim:     #555555;
+  --red:     #e63518;
+  --red-dim: rgba(230,53,24,0.12);
+  --red-mid: rgba(230,53,24,0.30);
+  --white:   #ffffff;
+  --green:   #3dba72;
+  --amber:   #f0a500;
+  --blue:    #4a9fd4;
+  --grey:    #aaaaaa;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Subtle dot-grid texture from Boss logo */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none; z-index: 0;
+}
+
+/* Left red accent — logo border reference */
+body::after {
+  content: '';
+  position: fixed; top: 0; left: 0;
+  width: 5px; height: 100vh;
+  background: var(--red);
+  pointer-events: none; z-index: 0;
+}
+
+.page { max-width: 1300px; margin: 0 auto; padding: 0 32px 80px; position: relative; z-index: 1; }
+
+/* ═══════════════════════════════
+   HEADER
+═══════════════════════════════ */
+header {
+  position: relative;
+  padding: 40px 0 34px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* dot grid from logo */
+.header-dots {
+  position: absolute; top: 0; right: 0;
+  width: 220px; height: 60px; opacity: 0.18;
+  background-image: radial-gradient(circle, #fff 1.5px, transparent 1.5px);
+  background-size: 14px 14px;
+  pointer-events: none;
+}
+
+.header-inner {
+  display: flex; align-items: flex-end; justify-content: space-between;
+}
+
+.brand-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 500; font-size: 11px;
+  letter-spacing: 5px; color: var(--red);
+  text-transform: uppercase; margin-bottom: 6px;
+}
+
+.brand-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 42px;
+  letter-spacing: 0px; line-height: 1; color: var(--white);
+}
+.brand-title span { color: var(--red); }
+
+.brand-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 400; font-size: 13px;
+  letter-spacing: 3px; color: var(--muted);
+  text-transform: uppercase; margin-top: 6px;
+}
+
+.header-right { text-align: right; }
+
+.week-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; font-size: 13px;
+  letter-spacing: 2px; text-transform: uppercase;
+  background: var(--red-dim);
+  border: 1px solid var(--red-mid);
+  border-radius: 4px; padding: 7px 18px;
+  color: var(--red); display: inline-block; margin-bottom: 14px;
+}
+
+.header-stats { display: flex; gap: 28px; justify-content: flex-end; }
+.h-stat { text-align: right; }
+.h-stat-n {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 28px;
+  color: var(--white); line-height: 1;
+}
+.h-stat-l {
+  font-size: 10px; color: var(--muted);
+  letter-spacing: 1.5px; text-transform: uppercase;
+}
+
+/* ═══════════════════════════════
+   SECTION LABEL
+═══════════════════════════════ */
+.sec {
+  display: flex; align-items: center; gap: 14px;
+  margin: 40px 0 18px;
+}
+.sec-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; font-size: 10px;
+  letter-spacing: 3px; color: var(--red);
+  background: var(--red-dim);
+  border: 1px solid var(--red-mid);
+  padding: 3px 10px; border-radius: 3px;
+}
+.sec-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; font-size: 18px;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--text);
+}
+.sec::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+
+/* ═══════════════════════════════
+   CARD
+═══════════════════════════════ */
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px 34px;
+  position: relative; overflow: hidden;
+  animation: fadeUp 0.45s ease both;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--red);
+  border-radius: 12px 12px 0 0;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card:nth-child(1) { animation-delay: .04s; }
+.card:nth-child(2) { animation-delay: .08s; }
+.card:nth-child(3) { animation-delay: .12s; }
+.card:nth-child(4) { animation-delay: .16s; }
+
+.card-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 17px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--white); margin-bottom: 3px;
+}
+.card-sub {
+  font-size: 10px; color: var(--muted);
+  letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 26px;
+}
+
+/* ═══════════════════════════════
+   01 · SANKEY
+═══════════════════════════════ */
+#sankey_div { width: 100%; }
+
+.sankey-stat-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  margin-top: 26px; padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.s-block { text-align: center; padding: 8px 10px; }
+.s-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 52px;
+  line-height: 1; letter-spacing: -1px;
+}
+.s-lbl {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 500; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-top: 4px;
+}
+.s-sub { font-size: 10px; color: var(--dim); margin-top: 3px; }
+
+.s-arrow { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 10px; }
+.s-arrow-icon { font-size: 20px; color: var(--dim); }
+.s-rate {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; font-size: 13px;
+  padding: 3px 12px; border-radius: 100px;
+}
+.rate-a { background: rgba(240,165,0,0.14); border: 1px solid rgba(240,165,0,0.35); color: var(--amber); }
+.rate-b { background: rgba(61,186,114,0.14); border: 1px solid rgba(61,186,114,0.35); color: var(--green); }
+
+/* ═══════════════════════════════
+   02 · REP TABLE
+═══════════════════════════════ */
+.rep-table { width: 100%; border-collapse: collapse; }
+.rep-table th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 500; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); padding: 8px 14px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.rep-table th:not(:first-child) { text-align: right; }
+.rep-table tbody tr {
+  border-bottom: 1px solid rgba(46,46,46,0.6);
+  transition: background .12s;
+}
+.rep-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+.rep-table tbody tr:last-child { border-bottom: none; }
+.rep-table td { padding: 13px 14px; vertical-align: middle; }
+.rep-table td:not(:first-child) {
+  text-align: right;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; font-size: 16px;
+}
+
+.rep-rank {
+  width: 28px; height: 28px; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 13px; flex-shrink: 0;
+}
+.rep-info { display: flex; align-items: center; gap: 12px; }
+.rep-name-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; font-size: 17px; color: var(--white);
+}
+.rep-deals-sub { font-size: 10px; color: var(--muted); margin-top: 1px; letter-spacing: .5px; }
+
+.bar-wrap { display: flex; align-items: center; gap: 10px; min-width: 180px; }
+.bar-track { flex: 1; height: 4px; background: var(--s3); border-radius: 100px; overflow: hidden; }
+.bar-fill  { height: 100%; border-radius: 100px; }
+.share-pct {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 500; font-size: 12px;
+  color: var(--muted); min-width: 40px; text-align: right;
+}
+
+/* ═══════════════════════════════
+   03 · HISTORICAL
+═══════════════════════════════ */
+.view-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.view-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; font-size: 10px;
+  letter-spacing: 2px; text-transform: uppercase;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--muted);
+  padding: 6px 16px; border-radius: 4px;
+  cursor: pointer; transition: all .15s;
+}
+.view-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+.view-btn:hover:not(.active) { border-color: var(--dim); color: var(--text); }
+
+.toggle-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.tgl-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 500; font-size: 10px;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--muted);
+  padding: 5px 13px; border-radius: 100px;
+  cursor: pointer; transition: all .15s;
+}
+.tgl-btn:hover { border-color: var(--dim); color: var(--text); }
+
+/* ═══════════════════════════════
+   04 · COMMAND CENTER
+═══════════════════════════════ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px; margin-bottom: 24px;
+}
+
+.kpi-tile {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px 24px;
+  position: relative; overflow: hidden;
+  transition: transform .18s, border-color .18s;
+}
+.kpi-tile:hover { transform: translateY(-2px); border-color: var(--border2); }
+
+/* bottom accent line */
+.kpi-tile::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+}
+.kpi-tile.c-red::after    { background: var(--red); }
+.kpi-tile.c-white::after  { background: rgba(255,255,255,0.5); }
+.kpi-tile.c-amber::after  { background: var(--amber); }
+.kpi-tile.c-green::after  { background: var(--green); }
+.kpi-tile.c-grey::after   { background: var(--grey); }
+.kpi-tile.c-blue::after   { background: var(--blue); }
+
+.kpi-icon { font-size: 20px; margin-bottom: 12px; display: block; opacity: 0.75; }
+.kpi-label {
+  font-size: 10px; color: var(--muted);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;
+}
+.kpi-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 40px;
+  line-height: 1; letter-spacing: -0.5px;
+}
+.kpi-meta { font-size: 11px; color: var(--muted); margin-top: 8px; letter-spacing: .3px; }
+.kpi-meta .up { color: var(--green); }
+.kpi-meta .dn { color: var(--red); }
+
+.cmd-bottom { display: grid; grid-template-columns: 380px 1fr; gap: 16px; }
+
+.inner-card {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 22px 24px;
+}
+.inner-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 500; font-size: 10px;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 18px;
+}
+
+/* ROI bars */
+.roi-bars { display: flex; flex-direction: column; gap: 13px; }
+.roi-item { display: flex; align-items: center; gap: 12px; }
+.roi-region {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 500; font-size: 13px;
+  width: 88px; color: var(--text);
+}
+.roi-track { flex: 1; height: 7px; background: var(--s3); border-radius: 100px; overflow: hidden; }
+.roi-fill  { height: 100%; border-radius: 100px; }
+.roi-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 14px;
+  min-width: 60px; text-align: right;
+}
+
+/* Cost list */
+.cost-list { display: flex; flex-direction: column; }
+.cost-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--s3);
+}
+.cost-row:last-child { border-bottom: none; }
+.cost-name { font-size: 12px; font-weight: 400; color: var(--muted); }
+.cost-sub  { font-size: 10px; color: var(--dim); margin-top: 1px; }
+.cost-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 19px; color: var(--white);
+}
+
+/* ═══════════════════════════════
+   FOOTER
+═══════════════════════════════ */
+footer {
+  margin-top: 64px; padding-top: 22px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-brand {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; font-size: 13px;
+  color: var(--muted); letter-spacing: 2.5px; text-transform: uppercase;
+}
+.footer-brand span { color: var(--red); }
+.footer-note { font-size: 10px; color: var(--dim); letter-spacing: 1px; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header>
+  <div class="header-dots"></div>
+  <div class="header-inner">
+    <div>
+      <div class="brand-eyebrow">◼ Boss Security Screens</div>
+      <div class="brand-title">WEEKLY <span>ANALYTICS</span></div>
+      <div class="brand-sub">Performance Intelligence Report</div>
+    </div>
+    <div class="header-right">
+      <div class="week-badge">FEB 23 — MAR 1, 2026</div>
+      <div class="header-stats">
+        <div class="h-stat"><div class="h-stat-n">212</div><div class="h-stat-l">Leads</div></div>
+        <div class="h-stat"><div class="h-stat-n">42</div><div class="h-stat-l">Estimates</div></div>
+        <div class="h-stat"><div class="h-stat-n">15</div><div class="h-stat-l">Sales</div></div>
+        <div class="h-stat"><div class="h-stat-n">$107K</div><div class="h-stat-l">Revenue</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- ═══════════════ 01 · SANKEY ═══════════════ -->
+<div class="sec">
+  <div class="sec-num">01</div>
+  <div class="sec-title">Lead → Estimate → Sale Funnel</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Sankey Conversion Flow</div>
+  <div class="card-sub">Feb 23 – Mar 1, 2026 · Total volume only</div>
+
+  <div id="sankey_div"></div>
+
+  <div class="sankey-stat-row">
+    <div class="s-block">
+      <div class="s-num" style="color:var(--blue);">212</div>
+      <div class="s-lbl">Total Leads</div>
+      <div class="s-sub">100% starting volume</div>
+    </div>
+    <div class="s-arrow">
+      <div class="s-arrow-icon">→</div>
+      <div class="s-rate rate-a">19.8%</div>
+    </div>
+    <div class="s-block">
+      <div class="s-num" style="color:var(--amber);">42</div>
+      <div class="s-lbl">Estimates Given</div>
+      <div class="s-sub">170 leads not estimated</div>
+    </div>
+    <div class="s-arrow">
+      <div class="s-arrow-icon">→</div>
+      <div class="s-rate rate-b">35.7%</div>
+    </div>
+    <div class="s-block">
+      <div class="s-num" style="color:var(--green);">15</div>
+      <div class="s-lbl">Closed Sales</div>
+      <div class="s-sub">7.1% overall lead→sale</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ 02 · REP TABLE ═══════════════ -->
+<div class="sec">
+  <div class="sec-num">02</div>
+  <div class="sec-title">Revenue by Sales Representative</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Sales Rep Leaderboard</div>
+  <div class="card-sub">Feb 23 – Mar 1 · 15 closed deals · $107,328 total revenue</div>
+  <table class="rep-table">
+    <thead>
+      <tr>
+        <th style="width:36px;">#</th>
+        <th>Sales Representative</th>
+        <th>Deals</th>
+        <th>Revenue</th>
+        <th>Avg Deal</th>
+        <th style="min-width:200px;">Revenue Share</th>
+      </tr>
+    </thead>
+    <tbody id="repBody"></tbody>
+  </table>
+</div>
+
+
+<!-- ═══════════════ 03 · HISTORICAL ═══════════════ -->
+<div class="sec">
+  <div class="sec-num">03</div>
+  <div class="sec-title">Historical Performance</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Multi-Metric Historical Trend</div>
+  <div class="card-sub">11 weeks · Dec 2025 – Mar 2026 · Toggle metrics & views below</div>
+
+  <div class="view-row">
+    <button class="view-btn active" onclick="switchView('trend', this)">Weekly Trend</button>
+    <button class="view-btn" onclick="switchView('source', this)">Revenue by Lead Source</button>
+    <button class="view-btn" onclick="switchView('source_leads', this)">Leads by Source</button>
+    <button class="view-btn" onclick="switchView('source_est', this)">Estimates by Source</button>
+  </div>
+
+  <div class="toggle-row" id="metricToggles">
+    <button class="tgl-btn active" onclick="toggleMetric('revenue', this)"   style="background:rgba(230,53,24,0.12);border-color:var(--red);color:var(--red);">Revenue</button>
+    <button class="tgl-btn active" onclick="toggleMetric('leads', this)"     style="background:rgba(74,159,212,0.12);border-color:var(--blue);color:var(--blue);">Leads</button>
+    <button class="tgl-btn active" onclick="toggleMetric('estimates', this)" style="background:rgba(240,165,0,0.12);border-color:var(--amber);color:var(--amber);">Estimates</button>
+    <button class="tgl-btn active" onclick="toggleMetric('sales', this)"     style="background:rgba(61,186,114,0.12);border-color:var(--green);color:var(--green);">Sales</button>
+    <button class="tgl-btn active" onclick="toggleMetric('spend', this)"     style="background:rgba(170,170,170,0.10);border-color:var(--grey);color:var(--grey);">Mktg Spend</button>
+  </div>
+
+  <div style="position:relative;">
+    <canvas id="histChart" height="280"></canvas>
+    <canvas id="sourceChart" height="280" style="display:none;"></canvas>
+  </div>
+</div>
+
+
+<!-- ═══════════════ 04 · COMMAND CENTER ═══════════════ -->
+<div class="sec">
+  <div class="sec-num">04</div>
+  <div class="sec-title">Command Center — Key Metrics</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Command Center — Key Metrics</div>
+  <div class="card-sub">Feb 23 – Mar 1, 2026 · All regions combined</div>
+
+  <div class="kpi-grid">
+    <div class="kpi-tile c-red">
+      <span class="kpi-icon">💰</span>
+      <div class="kpi-label">Total Revenue</div>
+      <div class="kpi-val" style="color:var(--red);">$107,328</div>
+      <div class="kpi-meta">$7,155 avg per closed deal</div>
+    </div>
+    <div class="kpi-tile c-white">
+      <span class="kpi-icon">📥</span>
+      <div class="kpi-label">Total Leads</div>
+      <div class="kpi-val" style="color:var(--white);">212</div>
+      <div class="kpi-meta"><span class="up">↑ 18%</span> vs prior week (180)</div>
+    </div>
+    <div class="kpi-tile c-amber">
+      <span class="kpi-icon">📋</span>
+      <div class="kpi-label">Estimates Given</div>
+      <div class="kpi-val" style="color:var(--amber);">42</div>
+      <div class="kpi-meta">19.8% lead-to-estimate rate</div>
+    </div>
+    <div class="kpi-tile c-green">
+      <span class="kpi-icon">✅</span>
+      <div class="kpi-label">Deals Closed</div>
+      <div class="kpi-val" style="color:var(--green);">15</div>
+      <div class="kpi-meta">35.7% est-to-close · 7.1% overall</div>
+    </div>
+    <div class="kpi-tile c-grey">
+      <span class="kpi-icon">📣</span>
+      <div class="kpi-label">Marketing Spend</div>
+      <div class="kpi-val" style="color:var(--grey);">$15,441</div>
+      <div class="kpi-meta">$9,902 Facebook · $5,540 Google</div>
+    </div>
+    <div class="kpi-tile c-blue">
+      <span class="kpi-icon">📈</span>
+      <div class="kpi-label">Overall ROI</div>
+      <div class="kpi-val" style="color:var(--blue);">5.95×</div>
+      <div class="kpi-meta">Revenue ÷ Marketing Spend</div>
+    </div>
+  </div>
+
+  <div class="cmd-bottom">
+    <div class="inner-card">
+      <div class="inner-title">ROI by Region</div>
+      <div class="roi-bars" id="roiBars"></div>
+    </div>
+    <div class="inner-card" style="overflow-x:auto;">
+      <div class="inner-title">ROI by Lead Source</div>
+      <table class="rep-table">
+        <thead>
+          <tr>
+            <th>Lead Source</th>
+            <th>Mktg Expense</th>
+            <th>Revenue</th>
+            <th>Avg Deal</th>
+            <th style="min-width:150px;">Revenue Share</th>
+          </tr>
+        </thead>
+        <tbody id="sourceRoiBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-brand"><span>BOSS</span> SECURITY SCREENS · ANALYTICS</div>
+  <div class="footer-note">FEB 23 – MAR 1, 2026 · CONFIDENTIAL INTERNAL REPORT</div>
+</footer>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════ -->
+<script>
+const WEEK = {
+  labels:    ['Dec 8-14','Dec 15-21','Dec 29-Jan 4','Jan 5-11','Jan 12-18','Jan 19-25','Jan 26-Feb 1','Feb 2-8','Feb 9-15','Feb 16-22','Feb 23-Mar 1'],
+  leads:     [175, 160, 160, 185, 186, 201, 250, 213, 199, 180, 212],
+  estimates: [30,  28,  40,  38,  68,  53,  32,  37,  46,  45,  42],
+  sales:     [12,  9,   11,  20,  13,  18,  9,   17,  13,  17,  15],
+  revenue:   [145313, 82495, 85822, 318264, 168125, 254510, 137435, 133883, 110901, 133430, 107328],
+  spend:     [12923,  11697, 9323,  10566,  10588,  11065,  15951,  16252,  15467,  14605,  15441]
+};
+
+const SOURCES = {
+  labels:    ['Facebook','YouTube','Google','TV','Ret. Client','Instagram','Referral'],
+  revenue:   [48268, 21860, 15000, 8200, 7715, 3800, 2485],
+  leads:     [72, 18, 39, 12, 20, 18, 8],
+  estimates: [18,  5, 10,  4,  5,  5, 2]
+};
+
+const REPS = [
+  { name: 'Sindy Thonhoff',  deals: 4, revenue: 38310 },
+  { name: 'Adam Rogers',     deals: 2, revenue: 32500 },
+  { name: 'Nick Stramaglio', deals: 4, revenue: 17090 },
+  { name: 'J Kerr',          deals: 1, revenue: 12000 },
+  { name: 'Mike Newman',     deals: 2, revenue: 4803  },
+  { name: 'Jim Dudman',      deals: 1, revenue: 1875  },
+  { name: 'Deana Buckley',   deals: 1, revenue: 750   }
+];
+
+const REGIONS = [
+  { name: 'Nevada',     roi: 10.44 },
+  { name: 'Other',      roi: 10.22 },
+  { name: 'California', roi: 3.51  },
+  { name: 'Arizona',    roi: 0     },
+  { name: 'Texas',      roi: 0     }
+];
+
+// ── Shared chart options ──────────────────────────
+const COPTS = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: {
+    legend: { labels: { color: '#888888', font: { family: "'Barlow Condensed', sans-serif", size: 12, weight: '500' }, boxWidth: 10, padding: 18 } },
+    tooltip: {
+      backgroundColor: '#111111', borderColor: '#2e2e2e', borderWidth: 1,
+      titleColor: '#f0f0f0', bodyColor: '#888888',
+      titleFont: { family: "'Barlow Condensed', sans-serif", size: 13, weight: '700' },
+      bodyFont:  { family: 'Barlow, sans-serif', size: 12 }, padding: 12
+    }
+  },
+  scales: {
+    x: { grid: { color: '#1e1e1e' }, ticks: { color: '#666666', font: { family: "'Barlow Condensed', sans-serif", size: 11 } } },
+    y: { grid: { color: '#1e1e1e' }, ticks: { color: '#666666', font: { family: "'Barlow Condensed', sans-serif", size: 11 } } }
+  }
+};
+
+// ── 01 · SANKEY ──────────────────────────────────
+google.charts.load('current', { packages: ['sankey'] });
+google.charts.setOnLoadCallback(() => {
+  const d = new google.visualization.DataTable();
+  d.addColumn('string', 'From');
+  d.addColumn('string', 'To');
+  d.addColumn('number', 'Weight');
+  d.addRows([
+    ['Total Leads (212)',   'Estimated (42)',       42],
+    ['Total Leads (212)',   'Not Estimated (170)', 170],
+    ['Estimated (42)',      'Closed Sales (15)',    15],
+    ['Estimated (42)',      'Not Closed (27)',      27],
+  ]);
+  new google.visualization.Sankey(document.getElementById('sankey_div')).draw(d, {
+    width: '100%', height: 300,
+    sankey: {
+      node: {
+        colors: ['#4a9fd4','#f0a500','#444444','#3dba72','#555555'],
+        label: { fontName: 'Barlow Condensed', fontSize: 13, bold: false, color: '#f0f0f0' },
+        nodePadding: 32, width: 20, interactivity: true
+      },
+      link: { colorMode: 'gradient', fillOpacity: 0.22 },
+      iterations: 128
+    },
+    tooltip: { isHtml: true },
+    backgroundColor: { fill: 'transparent' }
+  });
+});
+
+// ── 02 · REP TABLE ───────────────────────────────
+const totalRev  = REPS.reduce((a, r) => a + r.revenue, 0);
+const rankBg    = ['#e63518','#ffffff','#444444','#333333','#2a2a2a','#222222','#1e1e1e'];
+const rankFg    = ['#ffffff','#000000','#ffffff','#888888','#666666','#555555','#444444'];
+const barColors = ['#e63518','#f0f0f0','#4a9fd4','#f0a500','#3dba72','#888888','#666666'];
+
+document.getElementById('repBody').innerHTML = REPS.map((r, i) => {
+  const pct = (r.revenue / totalRev * 100).toFixed(1);
+  const avg = Math.round(r.revenue / r.deals).toLocaleString();
+  return `
+  <tr>
+    <td><div class="rep-rank" style="background:${rankBg[i]};color:${rankFg[i]};">${i+1}</div></td>
+    <td>
+      <div class="rep-info">
+        <div>
+          <div class="rep-name-text">${r.name}</div>
+          <div class="rep-deals-sub">${r.deals} deal${r.deals!==1?'s':''} closed</div>
+        </div>
+      </div>
+    </td>
+    <td style="color:var(--muted);">${r.deals}</td>
+    <td style="color:${barColors[i]};">$${r.revenue.toLocaleString()}</td>
+    <td style="color:var(--muted);">$${avg}</td>
+    <td>
+      <div class="bar-wrap">
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${barColors[i]};"></div></div>
+        <span class="share-pct">${pct}%</span>
+      </div>
+    </td>
+  </tr>`;
+}).join('');
+
+// ── 03 · HISTORICAL ──────────────────────────────
+let histInst = null, srcInst = null;
+let curView  = 'trend';
+let activeM  = { revenue: true, leads: true, estimates: true, sales: true, spend: true };
+
+const mCfg = {
+  revenue:   { label: 'Revenue ($)',    color: '#e63518', axis: 'y',  data: WEEK.revenue   },
+  leads:     { label: 'Leads',          color: '#4a9fd4', axis: 'y1', data: WEEK.leads      },
+  estimates: { label: 'Estimates',      color: '#f0a500', axis: 'y1', data: WEEK.estimates  },
+  sales:     { label: 'Sales',          color: '#3dba72', axis: 'y1', data: WEEK.sales      },
+  spend:     { label: 'Mktg Spend ($)', color: '#aaaaaa', axis: 'y',  data: WEEK.spend      }
+};
+
+function buildHist() {
+  if (histInst) histInst.destroy();
+  histInst = new Chart(document.getElementById('histChart'), {
+    type: 'line',
+    data: {
+      labels: WEEK.labels,
+      datasets: Object.entries(mCfg).filter(([k]) => activeM[k]).map(([k, c]) => ({
+        label: c.label, data: c.data,
+        borderColor: c.color,
+        backgroundColor: k === 'revenue' ? c.color + '0d' : 'transparent',
+        fill: k === 'revenue', tension: 0.4,
+        pointRadius: 4, pointBackgroundColor: c.color,
+        yAxisID: c.axis,
+        borderWidth: k === 'revenue' ? 2 : 1.5,
+        borderDash: k === 'spend' ? [5,3] : undefined
+      }))
+    },
+    options: {
+      ...COPTS,
+      scales: {
+        x: COPTS.scales.x,
+        y:  { ...COPTS.scales.y, position: 'left',  ticks: { ...COPTS.scales.y.ticks, callback: v => '$'+(v/1000).toFixed(0)+'K' } },
+        y1: { ...COPTS.scales.y, position: 'right', grid: { display: false }, ticks: { ...COPTS.scales.y.ticks } }
+      }
+    }
+  });
+}
+
+function buildSrc(type) {
+  if (srcInst) srcInst.destroy();
+  const c = ['#e63518','#f0f0f0','#4a9fd4','#f0a500','#3dba72','#aaaaaa','#666666'];
+  const map = { source: SOURCES.revenue, source_leads: SOURCES.leads, source_est: SOURCES.estimates };
+  const lbl = { source: 'Revenue ($)', source_leads: 'Leads', source_est: 'Estimates' };
+  srcInst = new Chart(document.getElementById('sourceChart'), {
+    type: 'bar',
+    data: {
+      labels: SOURCES.labels,
+      datasets: [{ label: lbl[type], data: map[type],
+        backgroundColor: c.map(x => x + 'bb'), borderColor: c, borderWidth: 1, borderRadius: 5 }]
+    },
+    options: {
+      ...COPTS,
+      scales: {
+        x: COPTS.scales.x,
+        y: { ...COPTS.scales.y, ticks: { ...COPTS.scales.y.ticks,
+          callback: type === 'source' ? v => '$'+(v/1000).toFixed(0)+'K' : v => v } }
+      }
+    }
+  });
+}
+
+function switchView(view, el) {
+  curView = view;
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('metricToggles').style.display = view === 'trend' ? 'flex' : 'none';
+  document.getElementById('histChart').style.display   = view === 'trend' ? 'block' : 'none';
+  document.getElementById('sourceChart').style.display = view !== 'trend' ? 'block' : 'none';
+  view === 'trend' ? buildHist() : buildSrc(view);
+}
+
+function toggleMetric(key, el) {
+  activeM[key] = !activeM[key];
+  const c = mCfg[key].color;
+  if (activeM[key]) {
+    el.style.background = c + '1a'; el.style.borderColor = c; el.style.color = c;
+  } else {
+    el.style.background = 'transparent'; el.style.borderColor = 'var(--border)'; el.style.color = 'var(--muted)';
+  }
+  if (curView === 'trend') buildHist();
+}
+
+buildHist();
+
+// ── 04 · COMMAND CENTER ──────────────────────────
+// ROI bars
+document.getElementById('roiBars').innerHTML = REGIONS.map(r => {
+  const pct   = r.roi > 0 ? Math.min(100, r.roi / 12 * 100) : 0;
+  const color = r.roi >= 8 ? '#3dba72' : r.roi >= 4 ? '#f0a500' : r.roi > 0 ? '#e63518' : '#555555';
+  const lbl   = r.roi > 0 ? r.roi.toFixed(1) + '×' : '— Loss';
+  return `
+  <div class="roi-item">
+    <div class="roi-region">${r.name}</div>
+    <div class="roi-track"><div class="roi-fill" style="width:${pct}%;background:${color};"></div></div>
+    <div class="roi-val" style="color:${color};">${lbl}</div>
+  </div>`;
+}).join('');
+
+// ROI by Lead Source table
+const SOURCE_ROI = [
+  { name: 'Facebook',       icon: '📘', spend: 9902,  revenue: 48268, deals: 6  },
+  { name: 'Returning Client',icon: '🔁', spend: 0,    revenue: 21860, deals: 3  },
+  { name: 'Google',         icon: '🔍', spend: 5540,  revenue: 15000, deals: 2  },
+  { name: 'TV',             icon: '📺', spend: 0,     revenue: 8200,  deals: 1  },
+  { name: 'YouTube',        icon: '▶️', spend: 0,     revenue: 7715,  deals: 1  },
+  { name: 'Instagram',      icon: '📸', spend: 0,     revenue: 3800,  deals: 1  },
+  { name: 'Referral',       icon: '🤝', spend: 0,     revenue: 2485,  deals: 1  }
+];
+
+const srcTotalRev  = SOURCE_ROI.reduce((a, s) => a + s.revenue, 0);
+const srcBarColors = ['#e63518','#f0f0f0','#4a9fd4','#f0a500','#3dba72','#aaaaaa','#666666'];
+const srcRankBg    = ['#e63518','#ffffff','#444444','#333333','#2a2a2a','#222222','#1e1e1e'];
+const srcRankFg    = ['#ffffff','#000000','#ffffff','#888888','#666666','#555555','#444444'];
+
+document.getElementById('sourceRoiBody').innerHTML = SOURCE_ROI.map((s, i) => {
+  const pct     = (s.revenue / srcTotalRev * 100).toFixed(1);
+  const avgDeal = s.deals > 0 ? Math.round(s.revenue / s.deals).toLocaleString() : '—';
+  const roiX    = s.spend > 0 ? (s.revenue / s.spend).toFixed(1) + '×' : '—';
+  const spendFmt = s.spend > 0 ? '$' + s.spend.toLocaleString() : '—';
+  return `
+  <tr>
+    <td>
+      <div class="rep-info">
+        <div class="rep-rank" style="background:${srcRankBg[i]};color:${srcRankFg[i]};">${i+1}</div>
+        <div>
+          <div class="rep-name-text">${s.icon} ${s.name}</div>
+          <div class="rep-deals-sub">ROI: ${roiX}</div>
+        </div>
+      </div>
+    </td>
+    <td style="color:var(--muted);">${spendFmt}</td>
+    <td style="color:${srcBarColors[i]};">$${s.revenue.toLocaleString()}</td>
+    <td style="color:var(--muted);">$${avgDeal}</td>
+    <td>
+      <div class="bar-wrap">
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${srcBarColors[i]};"></div></div>
+        <span class="share-pct">${pct}%</span>
+      </div>
+    </td>
+  </tr>`;
+}).join('');
+</script>
+</body>
+</html>
