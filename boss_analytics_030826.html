@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boss Security Screens — Weekly Analytics Mar 02–08 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --card: #111111;
+    --card2: #181818;
+    --border: #2e2e2e;
+    --red: #e63518;
+    --red-dim: rgba(230,53,24,0.15);
+    --text: #f0f0f0;
+    --muted: #888888;
+    --green: #3dba72;
+    --amber: #f0a500;
+    --blue: #4a9fd4;
+    --grey: #aaaaaa;
+    --steel: #6b7280;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    overflow-x: hidden;
+  }
+  /* Left accent bar */
+  body::before {
+    content: '';
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    background: var(--red);
+    z-index: 100;
+  }
+
+  .page { padding: 0 40px 60px 52px; max-width: 1400px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    position: relative;
+    background: #0d0d0d;
+    border-bottom: 1px solid var(--border);
+    padding: 28px 40px 24px 52px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .header-dot-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+  }
+  .header-inner {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .header-left {}
+  .header-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .header-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: var(--text);
+  }
+  .header-title span { color: var(--red); }
+  .week-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 5px 14px;
+    border: 1px solid var(--red);
+    border-radius: 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--red);
+    letter-spacing: 0.5px;
+  }
+  .week-badge::before {
+    content: '●';
+    font-size: 7px;
+    animation: blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .header-stats {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .hstat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 12px 18px;
+    text-align: center;
+    min-width: 100px;
+  }
+  .hstat:first-child { border-radius: 6px 0 0 6px; border-top: 3px solid var(--red); }
+  .hstat:last-child { border-radius: 0 6px 6px 0; border-top: 3px solid var(--red); }
+  .hstat-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+  .hstat-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 3px;
+  }
+
+  /* Download button row */
+  .download-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 28px;
+  }
+  .btn-download {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .btn-download:hover { background: #c82d15; }
+
+  /* Section labels */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .section-num {
+    background: var(--red);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--red);
+    border-radius: 6px;
+    padding: 20px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Section wrapper */
+  .section { margin-bottom: 40px; }
+
+  /* Sankey */
+  #sankey_div { width: 100%; height: 280px; }
+  .conv-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+  .conv-node {
+    text-align: center;
+    flex: 1;
+  }
+  .conv-node-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .conv-node-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .conv-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0 20px;
+  }
+  .conv-rate {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--amber);
+  }
+  .conv-arrow-line {
+    width: 60px;
+    height: 2px;
+    background: var(--border);
+    position: relative;
+  }
+  .conv-arrow-line::after {
+    content: '▶';
+    position: absolute;
+    right: -8px;
+    top: -8px;
+    font-size: 10px;
+    color: var(--border);
+  }
+  .conv-arrow-sub {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* Rep table */
+  .rep-table { width: 100%; border-collapse: collapse; }
+  .rep-table th {
+    text-align: left;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rep-table th:not(:first-child) { text-align: right; }
+  .rep-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(46,46,46,0.5);
+    vertical-align: middle;
+  }
+  .rep-table td:not(:first-child):not(:nth-child(2)) { text-align: right; }
+  .rep-table tr:last-child td { border-bottom: none; }
+  .rep-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .rank-1 { background: var(--red); color: #fff; }
+  .rank-2 { background: #f0f0f0; color: #111; }
+  .rank-3 { background: var(--steel); color: #fff; }
+  .rank-other { background: #222; color: var(--muted); }
+
+  .rep-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .rev-bar-wrap { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .rev-bar-bg {
+    width: 80px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .rev-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--red);
+  }
+  .rev-pct {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    min-width: 42px;
+    text-align: right;
+  }
+
+  /* Toggle buttons */
+  .toggle-group {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+  .toggle-btn {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 7px 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .toggle-btn:hover { border-color: var(--red); color: var(--text); }
+  .toggle-btn.active {
+    background: var(--red-dim);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .chart-panel { display: none; }
+  .chart-panel.active { display: block; }
+
+  /* KPI grid */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 3px solid;
+    border-radius: 6px;
+    padding: 16px 18px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards;
+  }
+  .kpi-card.red   { border-top-color: var(--red); }
+  .kpi-card.white { border-top-color: #f0f0f0; }
+  .kpi-card.amber { border-top-color: var(--amber); }
+  .kpi-card.green { border-top-color: var(--green); }
+  .kpi-card.grey  { border-top-color: var(--grey); }
+  .kpi-card.blue  { border-top-color: var(--blue); }
+
+  .kpi-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .kpi-val {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text);
+  }
+  .kpi-sub {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .kpi-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  .kpi-change.up   { color: var(--green); background: rgba(61,186,114,0.1); }
+  .kpi-change.down { color: #e05252; background: rgba(224,82,82,0.1); }
+
+  /* Bottom panels */
+  .cmd-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .cmd-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--red);
+    border-radius: 6px;
+    padding: 18px;
+  }
+  .cmd-panel-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+  }
+
+  /* Region bars */
+  .region-row {
+    margin-bottom: 12px;
+  }
+  .region-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .region-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .region-roi {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .region-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .region-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s ease;
+  }
+  .region-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .roi-green  { color: var(--green); }
+  .roi-amber  { color: var(--amber); }
+  .roi-red    { color: #e05252; }
+  .roi-grey   { color: var(--grey); }
+
+  /* Source ROI table */
+  .src-table { width: 100%; border-collapse: collapse; }
+  .src-table th {
+    text-align: left;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .src-table th:not(:first-child) { text-align: right; }
+  .src-table td {
+    padding: 8px 8px;
+    border-bottom: 1px solid rgba(46,46,46,0.4);
+    vertical-align: middle;
+    font-size: 13px;
+  }
+  .src-table td:not(:first-child) { text-align: right; }
+  .src-table tr:last-child td { border-bottom: none; }
+  .src-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .src-roi-sub {
+    font-size: 10px;
+    color: var(--muted);
+    display: block;
+  }
+
+  .val-green { color: var(--green); }
+  .val-amber { color: var(--amber); }
+  .val-red   { color: #e05252; }
+  .val-blue  { color: var(--blue); }
+
+  /* Stagger delays */
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .kpi-card:nth-child(1) { animation-delay: 0.05s; }
+  .kpi-card:nth-child(2) { animation-delay: 0.1s; }
+  .kpi-card:nth-child(3) { animation-delay: 0.15s; }
+  .kpi-card:nth-child(4) { animation-delay: 0.2s; }
+  .kpi-card:nth-child(5) { animation-delay: 0.25s; }
+  .kpi-card:nth-child(6) { animation-delay: 0.3s; }
+
+  canvas { max-height: 320px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-dot-grid"></div>
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="header-eyebrow">Boss Security Screens</div>
+      <div class="header-title">WEEKLY <span>ANALYTICS</span></div>
+      <div class="week-badge">MARCH 02 – MARCH 08, 2026</div>
+    </div>
+    <div class="header-stats">
+      <div class="hstat">
+        <div class="hstat-val">205</div>
+        <div class="hstat-label">Leads</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-val">87</div>
+        <div class="hstat-label">Estimates</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-val">23</div>
+        <div class="hstat-label">Sales</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-val" style="font-size:20px;">$207,807</div>
+        <div class="hstat-label">Revenue</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- DOWNLOAD ROW -->
+  <div class="download-row">
+    <button class="btn-download" onclick="downloadCSV()">⬇ Download Data Tables</button>
+  </div>
+
+  <!-- 01 SANKEY -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Conversion Flow</span>
+    </div>
+    <div class="card" style="animation-delay:0.05s">
+      <div id="sankey_div"></div>
+      <div class="conv-stats">
+        <div class="conv-node">
+          <div class="conv-node-val" style="color:var(--blue)">205</div>
+          <div class="conv-node-label">Total Leads</div>
+        </div>
+        <div class="conv-arrow">
+          <div class="conv-rate">42.4%</div>
+          <div class="conv-arrow-line"></div>
+          <div class="conv-arrow-sub">lead→est</div>
+        </div>
+        <div class="conv-node">
+          <div class="conv-node-val" style="color:var(--amber)">87</div>
+          <div class="conv-node-label">Estimated</div>
+        </div>
+        <div class="conv-arrow">
+          <div class="conv-rate">26.4%</div>
+          <div class="conv-arrow-line"></div>
+          <div class="conv-arrow-sub">est→close</div>
+        </div>
+        <div class="conv-node">
+          <div class="conv-node-val" style="color:var(--green)">23</div>
+          <div class="conv-node-label">Closed Sales</div>
+        </div>
+        <div class="conv-arrow">
+          <div class="conv-rate">11.2%</div>
+          <div class="conv-arrow-line"></div>
+          <div class="conv-arrow-sub">overall rate</div>
+        </div>
+        <div class="conv-node">
+          <div class="conv-node-val" style="color:var(--red)">$9,035</div>
+          <div class="conv-node-label">Avg Deal Size</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 REP LEADERBOARD -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Revenue by Sales Representative</span>
+    </div>
+    <div class="card" style="animation-delay:0.1s">
+      <table class="rep-table">
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th>Sales Representative</th>
+            <th>Deals</th>
+            <th>Revenue</th>
+            <th>Avg Deal</th>
+            <th>Revenue Share</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="rank-badge rank-1">1</span></td>
+            <td><span class="rep-name">Sindy Thonhoff</span></td>
+            <td>5</td>
+            <td><strong>$55,189</strong></td>
+            <td>$11,038</td>
+            <td><div class="rev-bar-wrap"><div class="rev-bar-bg"><div class="rev-bar-fill" style="width:26.56%"></div></div><span class="rev-pct">26.56%</span></div></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge rank-2">2</span></td>
+            <td><span class="rep-name">David Mauney</span></td>
+            <td>3</td>
+            <td><strong>$54,110</strong></td>
+            <td>$18,037</td>
+            <td><div class="rev-bar-wrap"><div class="rev-bar-bg"><div class="rev-bar-fill" style="width:26.04%"></div></div><span class="rev-pct">26.04%</span></div></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge rank-3">3</span></td>
+            <td><span class="rep-name">J Kerr</span></td>
+            <td>2</td>
+            <td><strong>$29,392</strong></td>
+            <td>$14,696</td>
+            <td><div class="rev-bar-wrap"><div class="rev-bar-bg"><div class="rev-bar-fill" style="width:14.14%"></div></div><span class="rev-pct">14.14%</span></div></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge rank-other">4</span></td>
+            <td><span class="rep-name">Adam Rogers</span></td>
+            <td>6</td>
+            <td><strong>$27,392</strong></td>
+            <td>$4,565</td>
+            <td><div class="rev-bar-wrap"><div class="rev-bar-bg"><div class="rev-bar-fill" style="width:13.18%"></div></div><span class="rev-pct">13.18%</span></div></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge rank-other">5</span></td>
+            <td><span class="rep-name">Nick Stramaglio</span></td>
+            <td>2</td>
+            <td><strong>$10,940</strong></td>
+            <td>$5,470</td>
+            <td><div class="rev-bar-wrap"><div class="rev-bar-bg"><div class="rev-bar-fill" style="width:5.26%"></div></div><span class="rev-pct">5.26%</span></div></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge rank-other">6</span></td>
+            <td><span class="rep-name">Robert Jones</span></td>
+            <td>1</td>
+            <td><strong>$9,454</strong></td>
+            <td>$9,454</td>
+            <td><div class="rev-bar-wrap"><div class="rev-bar-bg"><div class="rev-bar-fill" style="width:4.55%"></div></div><span class="rev-pct">4.55%</span></div></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge rank-other">7</span></td>
+            <td><span class="rep-name">Mike Newman</span></td>
+            <td>1</td>
+            <td><strong>$7,187</strong></td>
+            <td>$7,187</td>
+            <td><div class="rev-bar-wrap"><div class="rev-bar-bg"><div class="rev-bar-fill" style="width:3.46%"></div></div><span class="rev-pct">3.46%</span></div></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge rank-other">8</span></td>
+            <td><span class="rep-name">James Kerr</span></td>
+            <td>1</td>
+            <td><strong>$7,143</strong></td>
+            <td>$7,143</td>
+            <td><div class="rev-bar-wrap"><div class="rev-bar-bg"><div class="rev-bar-fill" style="width:3.44%"></div></div><span class="rev-pct">3.44%</span></div></td>
+          </tr>
+          <tr>
+            <td><span class="rank-badge rank-other">9</span></td>
+            <td><span class="rep-name">Deana Buckley</span></td>
+            <td>2</td>
+            <td><strong>$7,001</strong></td>
+            <td>$3,501</td>
+            <td><div class="rev-bar-wrap"><div class="rev-bar-bg"><div class="rev-bar-fill" style="width:3.37%"></div></div><span class="rev-pct">3.37%</span></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 03 HISTORICAL -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Historical Performance</span>
+    </div>
+    <div class="card" style="animation-delay:0.15s">
+      <div class="toggle-group">
+        <button class="toggle-btn active" onclick="showPanel('trend',this)">Weekly Trend</button>
+        <button class="toggle-btn" onclick="showPanel('rev_src',this)">Revenue by Lead Source</button>
+        <button class="toggle-btn" onclick="showPanel('leads_src',this)">Leads by Source</button>
+        <button class="toggle-btn" onclick="showPanel('est_src',this)">Estimates by Source</button>
+      </div>
+
+      <div id="trend" class="chart-panel active">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center;">
+          <span style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-right:4px;">Toggle:</span>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text)">
+            <input type="checkbox" checked onchange="toggleDataset(trendChart,0,this)" style="accent-color:var(--red)"> Revenue
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text)">
+            <input type="checkbox" checked onchange="toggleDataset(trendChart,1,this)" style="accent-color:var(--blue)"> Leads
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text)">
+            <input type="checkbox" checked onchange="toggleDataset(trendChart,2,this)" style="accent-color:var(--amber)"> Estimates
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text)">
+            <input type="checkbox" checked onchange="toggleDataset(trendChart,3,this)" style="accent-color:var(--green)"> Sales
+          </label>
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text)">
+            <input type="checkbox" checked onchange="toggleDataset(trendChart,4,this)" style="accent-color:var(--grey)"> Mktg Spend
+          </label>
+        </div>
+        <canvas id="trendCanvas" height="280"></canvas>
+      </div>
+
+      <div id="rev_src" class="chart-panel">
+        <canvas id="revSrcCanvas" height="240"></canvas>
+      </div>
+      <div id="leads_src" class="chart-panel">
+        <canvas id="leadsSrcCanvas" height="240"></canvas>
+      </div>
+      <div id="est_src" class="chart-panel">
+        <canvas id="estSrcCanvas" height="240"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 COMMAND CENTER -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">Command Center — Key Metrics</span>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card red">
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-val">$207,807</div>
+        <div class="kpi-sub">
+          <span class="kpi-change up">↑ 93.6%</span>
+          vs prior week ($107,328)
+        </div>
+      </div>
+      <div class="kpi-card white">
+        <div class="kpi-label">Total Leads</div>
+        <div class="kpi-val">205</div>
+        <div class="kpi-sub">
+          <span class="kpi-change down">↓ 3.3%</span>
+          vs prior week (212)
+        </div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label">Estimates Given</div>
+        <div class="kpi-val">87</div>
+        <div class="kpi-sub">
+          <span class="kpi-change up">↑ 107.1%</span>
+          Lead→Est rate: <strong>42.4%</strong>
+        </div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">Deals Closed</div>
+        <div class="kpi-val">23</div>
+        <div class="kpi-sub">
+          Est→Close: <strong>26.4%</strong> &nbsp;|&nbsp; Overall: <strong>11.2%</strong>
+          &nbsp;<span class="kpi-change up">↑ 53.3%</span>
+        </div>
+      </div>
+      <div class="kpi-card grey">
+        <div class="kpi-label">Marketing Spend</div>
+        <div class="kpi-val">$13,776</div>
+        <div class="kpi-sub">
+          <span class="kpi-change up">↓ 10.8%</span>
+          Google: <strong>$5,705</strong> &nbsp;|&nbsp; FB: <strong>$8,072</strong>
+        </div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">Overall ROI</div>
+        <div class="kpi-val" style="color:var(--green)">14.08×</div>
+        <div class="kpi-sub">
+          Revenue ÷ Total Spend &nbsp;
+          <span class="kpi-change up">🟢 Excellent</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cmd-panels">
+      <!-- ROI by Region -->
+      <div class="cmd-panel">
+        <div class="cmd-panel-title">ROI by Region</div>
+
+        <div class="region-row">
+          <div class="region-header">
+            <span class="region-name">Texas</span>
+            <span class="region-roi roi-green">100.83×</span>
+          </div>
+          <div class="region-bar-bg"><div class="region-bar-fill" style="width:100%;background:var(--green)"></div></div>
+          <div class="region-meta">2 sales · $48,211 rev · $473 spend</div>
+        </div>
+
+        <div class="region-row">
+          <div class="region-header">
+            <span class="region-name">Nevada</span>
+            <span class="region-roi roi-green">12.73×</span>
+          </div>
+          <div class="region-bar-bg"><div class="region-bar-fill" style="width:12.6%;background:var(--green)"></div></div>
+          <div class="region-meta">7 sales · $61,209 rev · $4,457 spend</div>
+        </div>
+
+        <div class="region-row">
+          <div class="region-header">
+            <span class="region-name">California</span>
+            <span class="region-roi roi-green">11.49×</span>
+          </div>
+          <div class="region-bar-bg"><div class="region-bar-fill" style="width:11.4%;background:var(--green)"></div></div>
+          <div class="region-meta">6 sales · $57,283 rev · $4,587 spend</div>
+        </div>
+
+        <div class="region-row">
+          <div class="region-header">
+            <span class="region-name">Arizona</span>
+            <span class="region-roi roi-green">9.43×</span>
+          </div>
+          <div class="region-bar-bg"><div class="region-bar-fill" style="width:9.4%;background:var(--green)"></div></div>
+          <div class="region-meta">5 sales · $20,392 rev · $1,955 spend</div>
+        </div>
+
+        <div class="region-row">
+          <div class="region-header">
+            <span class="region-name">Other</span>
+            <span class="region-roi roi-amber">7.99×</span>
+          </div>
+          <div class="region-bar-bg"><div class="region-bar-fill" style="width:7.9%;background:var(--amber)"></div></div>
+          <div class="region-meta">3 sales · $20,713 rev · $2,304 spend</div>
+        </div>
+      </div>
+
+      <!-- ROI by Lead Source -->
+      <div class="cmd-panel">
+        <div class="cmd-panel-title">ROI by Lead Source</div>
+        <table class="src-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Lead Source</th>
+              <th>Mktg Expense</th>
+              <th>Revenue</th>
+              <th>Avg Deal</th>
+              <th>Rev Share</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="rank-badge rank-1" style="width:20px;height:20px;font-size:10px;">1</span></td>
+              <td>
+                <span class="src-name">Google</span>
+                <span class="src-roi-sub">ROI: 12.74×</span>
+              </td>
+              <td>$5,705</td>
+              <td class="val-green"><strong>$72,654</strong></td>
+              <td>$7,265</td>
+              <td>
+                <div class="rev-bar-wrap" style="justify-content:flex-end">
+                  <div class="rev-bar-bg"><div class="rev-bar-fill" style="width:34.96%"></div></div>
+                  <span class="rev-pct">34.96%</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="rank-badge rank-2" style="width:20px;height:20px;font-size:10px;">2</span></td>
+              <td>
+                <span class="src-name">Facebook</span>
+                <span class="src-roi-sub">ROI: 8.01×</span>
+              </td>
+              <td>$8,072</td>
+              <td class="val-green"><strong>$64,650</strong></td>
+              <td>$9,236</td>
+              <td>
+                <div class="rev-bar-wrap" style="justify-content:flex-end">
+                  <div class="rev-bar-bg"><div class="rev-bar-fill" style="width:31.11%"></div></div>
+                  <span class="rev-pct">31.11%</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="rank-badge rank-3" style="width:20px;height:20px;font-size:10px;">3</span></td>
+              <td>
+                <span class="src-name">Unknown / Organic</span>
+                <span class="src-roi-sub">No tracked spend</span>
+              </td>
+              <td style="color:var(--muted)">—</td>
+              <td><strong>$54,870</strong></td>
+              <td>$18,290</td>
+              <td>
+                <div class="rev-bar-wrap" style="justify-content:flex-end">
+                  <div class="rev-bar-bg"><div class="rev-bar-fill" style="width:26.40%"></div></div>
+                  <span class="rev-pct">26.40%</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="rank-badge rank-other" style="width:20px;height:20px;font-size:10px;">4</span></td>
+              <td>
+                <span class="src-name">Returning Client</span>
+                <span class="src-roi-sub">No tracked spend</span>
+              </td>
+              <td style="color:var(--muted)">—</td>
+              <td><strong>$13,233</strong></td>
+              <td>$6,617</td>
+              <td>
+                <div class="rev-bar-wrap" style="justify-content:flex-end">
+                  <div class="rev-bar-bg"><div class="rev-bar-fill" style="width:6.37%"></div></div>
+                  <span class="rev-pct">6.37%</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="rank-badge rank-other" style="width:20px;height:20px;font-size:10px;">5</span></td>
+              <td>
+                <span class="src-name">ADAM</span>
+                <span class="src-roi-sub">No tracked spend</span>
+              </td>
+              <td style="color:var(--muted)">—</td>
+              <td><strong>$2,400</strong></td>
+              <td>$2,400</td>
+              <td>
+                <div class="rev-bar-wrap" style="justify-content:flex-end">
+                  <div class="rev-bar-bg"><div class="rev-bar-fill" style="width:1.16%"></div></div>
+                  <span class="rev-pct">1.16%</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ===== SANKEY =====
+google.charts.load('current', {packages:['sankey']});
+google.charts.setOnLoadCallback(drawSankey);
+function drawSankey() {
+  var data = new google.visualization.DataTable();
+  data.addColumn('string', 'From');
+  data.addColumn('string', 'To');
+  data.addColumn('number', 'Weight');
+  data.addRows([
+    ['Total Leads (205)', 'Estimated (87)',      87],
+    ['Total Leads (205)', 'Not Estimated (118)', 118],
+    ['Estimated (87)',    'Closed Sales (23)',    23],
+    ['Estimated (87)',    'Not Closed (64)',      64],
+  ]);
+  var options = {
+    width: '100%',
+    height: 260,
+    sankey: {
+      node: {
+        colors: ['#4a9fd4','#f0a500','#888888','#3dba72','#444444'],
+        label: {
+          fontName: 'Barlow Condensed',
+          fontSize: 13,
+          color: '#f0f0f0',
+          bold: true
+        },
+        nodePadding: 30,
+        width: 20
+      },
+      link: {
+        colorMode: 'gradient',
+        fillOpacity: 0.25
+      }
+    },
+    tooltip: { isHtml: true },
+    backgroundColor: { fill: '#111111' }
+  };
+  var chart = new google.visualization.Sankey(document.getElementById('sankey_div'));
+  chart.draw(data, options);
+}
+
+// ===== CHART DATA =====
+const weekLabels = [
+  'Dec 08','Dec 15','Dec 29','Jan 05','Jan 12','Jan 19','Jan 26',
+  'Feb 02','Feb 09','Feb 16','Feb 23','Mar 02'
+];
+const weekRevenue  = [145313,82494.65,85821.6,318263.67,168125,254509.76,137434.67,133882.98,110901,133430.46,107328,207807.44];
+const weekLeads    = [175,160,160,185,186,201,250,213,199,180,212,205];
+const weekEst      = [30,28,40,38,68,53,32,37,46,45,42,87];
+const weekSales    = [12,9,11,20,13,18,9,17,13,17,15,23];
+const weekSpend    = [12922.97,11697.22,9322.82,10565.92,10587.57,11065.01,15950.9,16251.53,15467.36,14604.56,15441.31,13776.29];
+
+// Lead source data (all-time)
+const srcLabels  = ['Google','Returning Client','Facebook','Referral','Unknown','-','--','YouTube','Instagram','Yelp','Returning','TV','Vehicles','LiveChat','Webinar','ADAM','Self Source'];
+const srcRev     = [856793.73,393948.71,337764,328741.83,113341.9,524156.37,177980.65,88717,50278,28205,23067.79,10627,11885,6000,5725,2400,7144];
+const srcDeals   = [87,52,39,27,7,41,12,5,9,2,4,3,2,1,1,1,1];
+// Estimates by source — use ROI region data as proxy; for source view we'll use revenue-weighted estimate
+const srcEst     = [64,52,39,27,7,41,12,5,9,2,4,3,2,1,1,1,1];
+
+Chart.defaults.color = '#888888';
+Chart.defaults.borderColor = '#2e2e2e';
+Chart.defaults.font.family = 'Barlow';
+
+let trendChart, revSrcChart, leadsSrcChart, estSrcChart;
+
+// Trend chart
+const trendCtx = document.getElementById('trendCanvas').getContext('2d');
+trendChart = new Chart(trendCtx, {
+  type: 'line',
+  data: {
+    labels: weekLabels,
+    datasets: [
+      {
+        label: 'Revenue ($)',
+        data: weekRevenue,
+        borderColor: '#e63518',
+        backgroundColor: 'rgba(230,53,24,0.08)',
+        fill: true,
+        tension: 0.4,
+        yAxisID: 'y',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#e63518',
+        borderWidth: 2
+      },
+      {
+        label: 'Leads',
+        data: weekLeads,
+        borderColor: '#4a9fd4',
+        backgroundColor: 'transparent',
+        tension: 0.4,
+        yAxisID: 'y2',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#4a9fd4',
+        borderWidth: 2
+      },
+      {
+        label: 'Estimates',
+        data: weekEst,
+        borderColor: '#f0a500',
+        backgroundColor: 'transparent',
+        tension: 0.4,
+        yAxisID: 'y2',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#f0a500',
+        borderWidth: 2,
+        borderDash: [5,3]
+      },
+      {
+        label: 'Sales',
+        data: weekSales,
+        borderColor: '#3dba72',
+        backgroundColor: 'transparent',
+        tension: 0.4,
+        yAxisID: 'y2',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#3dba72',
+        borderWidth: 2
+      },
+      {
+        label: 'Mktg Spend ($)',
+        data: weekSpend,
+        borderColor: '#aaaaaa',
+        backgroundColor: 'transparent',
+        tension: 0.4,
+        yAxisID: 'y',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#aaaaaa',
+        borderWidth: 1.5,
+        borderDash: [3,3]
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          font: { family: 'Barlow Condensed', size: 12, weight: '600' },
+          boxWidth: 20,
+          padding: 16,
+          color: '#aaaaaa'
+        }
+      },
+      tooltip: {
+        backgroundColor: '#181818',
+        borderColor: '#2e2e2e',
+        borderWidth: 1,
+        titleFont: { family: 'Barlow Condensed', size: 13 },
+        bodyFont: { family: 'Barlow', size: 12 },
+        callbacks: {
+          label: function(ctx) {
+            let v = ctx.raw;
+            if (ctx.dataset.label.includes('$')) return ctx.dataset.label + ': $' + v.toLocaleString();
+            return ctx.dataset.label + ': ' + v;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(46,46,46,0.5)' },
+        ticks: { font: { family: 'Barlow Condensed', size: 11 } }
+      },
+      y: {
+        type: 'linear',
+        position: 'left',
+        grid: { color: 'rgba(46,46,46,0.5)' },
+        ticks: {
+          font: { family: 'Barlow Condensed', size: 11 },
+          callback: v => '$' + (v/1000).toFixed(0) + 'K'
+        }
+      },
+      y2: {
+        type: 'linear',
+        position: 'right',
+        grid: { drawOnChartArea: false },
+        ticks: { font: { family: 'Barlow Condensed', size: 11 } }
+      }
+    }
+  }
+});
+
+// Sorted source labels for bar charts
+const sortedIdx = srcRev.map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v).map(x=>x.i);
+const sortedSrcLabels = sortedIdx.map(i=>srcLabels[i]);
+const sortedSrcRev    = sortedIdx.map(i=>srcRev[i]);
+const sortedSrcDeals  = sortedIdx.map(i=>srcDeals[i]);
+
+const barOpts = (label, data, color) => ({
+  type: 'bar',
+  data: {
+    labels: sortedSrcLabels,
+    datasets: [{
+      label: label,
+      data: data,
+      backgroundColor: color + 'cc',
+      borderColor: color,
+      borderWidth: 1,
+      borderRadius: 3
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#181818',
+        borderColor: '#2e2e2e',
+        borderWidth: 1,
+        callbacks: {
+          label: function(ctx) {
+            let v = ctx.raw;
+            if (label.includes('$')) return label + ': $' + v.toLocaleString();
+            return label + ': ' + v;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(46,46,46,0.5)' },
+        ticks: {
+          font: { family: 'Barlow Condensed', size: 11 },
+          callback: v => label.includes('$') ? '$' + (v/1000).toFixed(0) + 'K' : v
+        }
+      },
+      y: {
+        grid: { color: 'rgba(46,46,46,0.5)' },
+        ticks: { font: { family: 'Barlow Condensed', size: 11 } }
+      }
+    }
+  }
+});
+
+revSrcChart   = new Chart(document.getElementById('revSrcCanvas').getContext('2d'),   barOpts('Revenue ($)', sortedSrcRev, '#e63518'));
+leadsSrcChart = new Chart(document.getElementById('leadsSrcCanvas').getContext('2d'), barOpts('Deals', sortedSrcDeals, '#4a9fd4'));
+estSrcChart   = new Chart(document.getElementById('estSrcCanvas').getContext('2d'),   barOpts('Deals', sortedSrcDeals, '#f0a500'));
+
+// Toggle panels
+function showPanel(id, btn) {
+  document.querySelectorAll('.chart-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Toggle dataset visibility
+function toggleDataset(chart, idx, cb) {
+  const meta = chart.getDatasetMeta(idx);
+  meta.hidden = !cb.checked;
+  chart.update();
+}
+
+// ===== CSV DOWNLOAD =====
+function downloadCSV() {
+  let csv = '';
+  csv += 'BOSS SECURITY SCREENS — WEEK OF MARCH 02-08 2026\n\n';
+
+  // Weekly summary section
+  csv += 'WEEKLY SUMMARY\n';
+  csv += 'Week,Leads,Estimates,Sales,Revenue,Mktg Spend,Google,Facebook,ROI\n';
+  const weeks  = ['Dec 08-14','Dec 15-21','Dec 29-Jan 04','Jan 05-11','Jan 12-18','Jan 19-25','Jan 26-Feb 01','Feb 02-08','Feb 09-15','Feb 16-22','Feb 23-Mar 01','Mar 02-08'];
+  const mktg   = [12922.97,11697.22,9322.82,10565.92,10587.57,11065.01,15950.9,16251.53,15467.36,14604.56,15441.31,13776.29];
+  for(let i=0;i<weeks.length;i++) {
+    const roi = weekRevenue[i] / weekSpend[i];
+    csv += weeks[i]+','+weekLeads[i]+','+weekEst[i]+','+weekSales[i]+','+weekRevenue[i].toFixed(2)+','+weekSpend[i].toFixed(2)+',,,' + roi.toFixed(2) + '\n';
+  }
+
+  csv += '\nSALES BY REP — CURRENT WEEK (MAR 02-08)\n';
+  csv += 'Rank,Rep,Deals,Revenue,Avg Deal,Rev Share\n';
+  const reps = [
+    ['1','Sindy Thonhoff','5','55189.00','11037.80','26.56%'],
+    ['2','David Mauney','3','54110.15','18036.72','26.04%'],
+    ['3','J Kerr','2','29391.79','14695.90','14.14%'],
+    ['4','Adam Rogers','6','27392.00','4565.33','13.18%'],
+    ['5','Nick Stramaglio','2','10940.00','5470.00','5.26%'],
+    ['6','Robert Jones','1','9454.00','9454.00','4.55%'],
+    ['7','Mike Newman','1','7187.00','7187.00','3.46%'],
+    ['8','James Kerr','1','7142.50','7142.50','3.44%'],
+    ['9','Deana Buckley','2','7001.00','3500.50','3.37%']
+  ];
+  reps.forEach(r => csv += r.join(',') + '\n');
+
+  csv += '\nLEAD SOURCE ROI — CURRENT WEEK\n';
+  csv += 'Source,Deals,Revenue,Avg Deal,Mktg Spend,ROI,Rev Share\n';
+  csv += 'Google,10,72654.29,7265.43,5704.69,12.74x,34.96%\n';
+  csv += 'Facebook,7,64650.00,9235.71,8071.60,8.01x,31.11%\n';
+  csv += 'Unknown/Organic,3,54870.15,18290.05,—,—,26.40%\n';
+  csv += 'Returning Client,2,13233.00,6616.50,—,—,6.37%\n';
+  csv += 'ADAM,1,2400.00,2400.00,—,—,1.16%\n';
+
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'boss_data_030226_030826.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
