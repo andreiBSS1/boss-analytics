@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOSS Weekly Analytics — Mar 9–15, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0a0a0a;--card:#111111;--card-alt:#181818;--border:#2e2e2e;--red:#e63518;--text:#f0f0f0;--muted:#888888;--green:#3dba72;--amber:#f0a500;--blue:#4a9fd4;--grey:#aaaaaa;--darkgrey:#333333}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-weight:400;line-height:1.5;min-height:100vh}
+body::before{content:'';position:fixed;left:0;top:0;width:5px;height:100vh;background:var(--red);z-index:100}
+.container{max-width:1200px;margin:0 auto;padding:40px 30px 60px 40px}
+.header{position:relative;margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+.header-dot-grid{position:absolute;top:0;right:0;width:200px;height:80px;background-image:radial-gradient(circle,rgba(255,255,255,0.08) 1px,transparent 1px);background-size:12px 12px;pointer-events:none}
+.header-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:42px;letter-spacing:2px;text-transform:uppercase;line-height:1.1}
+.header-title span{color:var(--red)}
+.header-badge{display:inline-block;margin-top:12px;padding:4px 16px;border:1px solid var(--red);border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:14px;color:var(--red);letter-spacing:1px}
+.header-stats{position:absolute;top:0;right:0;display:flex;gap:24px;z-index:1}
+.header-stat{text-align:right}
+.header-stat-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:500}
+.header-stat-value{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;color:var(--text)}
+.header-stat-change{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;margin-top:2px}
+.chg-up{color:var(--green)}.chg-dn{color:var(--red)}.chg-flat{color:var(--muted)}
+.download-row{display:flex;justify-content:flex-end;margin-bottom:36px}
+.download-btn{background:var(--red);color:#fff;border:none;padding:10px 24px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.5px;cursor:pointer;border-radius:4px;transition:opacity .2s}
+.download-btn:hover{opacity:.85}
+.section-label{display:inline-flex;align-items:center;gap:10px;margin-bottom:20px}
+.section-num{background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;padding:3px 10px;border-radius:10px;letter-spacing:1px}
+.section-name{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px;text-transform:uppercase;letter-spacing:2px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:6px;padding:28px;margin-bottom:36px;animation:fadeUp .5s ease both}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+#sankey-chart{width:100%;height:280px}
+.funnel-stats{display:flex;justify-content:center;gap:60px;margin-top:20px;padding-top:20px;border-top:1px solid var(--border)}
+.funnel-stat{text-align:center}
+.funnel-stat-value{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:32px}
+.funnel-stat-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;font-weight:500}
+.funnel-stat-chg{font-size:12px;font-family:'Barlow Condensed',sans-serif;font-weight:600;margin-top:2px}
+.funnel-arrow{display:flex;align-items:center;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px}
+.tb{width:100%;border-collapse:collapse}
+.tb th{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border)}
+.tb td{padding:14px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:15px;border-bottom:1px solid rgba(46,46,46,.5);vertical-align:middle}
+.tb tr:last-child td{border-bottom:none}
+.rb{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px}
+.r1{background:var(--red);color:#fff}.r2{background:#fff;color:#0a0a0a}.r3{background:#6b7280;color:#fff}.ro{background:var(--darkgrey);color:var(--muted)}
+.sb-bg{width:100%;height:8px;background:var(--darkgrey);border-radius:4px;overflow:hidden;margin-top:4px}
+.sb-fill{height:100%;background:var(--red);border-radius:4px;transition:width .6s ease}
+.toggle-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.toggle-btn{background:var(--card-alt);border:1px solid var(--border);color:var(--muted);padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:13px;letter-spacing:.5px;border-radius:4px;cursor:pointer;transition:all .2s}
+.toggle-btn.active{background:var(--red);border-color:var(--red);color:#fff}
+.toggle-btn:hover:not(.active){border-color:var(--muted)}
+.cc{position:relative;height:320px;display:none}.cc.active{display:block}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.kpi{background:var(--card-alt);border:1px solid var(--border);border-radius:6px;padding:20px;border-top:3px solid var(--border)}
+.kpi-r{border-top-color:var(--red)}.kpi-w{border-top-color:#fff}.kpi-a{border-top-color:var(--amber)}.kpi-g{border-top-color:var(--green)}.kpi-gr{border-top-color:var(--grey)}.kpi-b{border-top-color:var(--blue)}
+.kpi-label{font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px}
+.kpi-value{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;line-height:1.1}
+.kpi-sub{font-family:'Barlow',sans-serif;font-size:12px;color:var(--muted);margin-top:6px;font-weight:500}
+.kpi-chg{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;margin-top:4px}
+.bottom-panels{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.panel{background:var(--card-alt);border:1px solid var(--border);border-radius:6px;padding:24px}
+.panel-title{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:18px}
+.roi-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.roi-label{width:50px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;flex-shrink:0}
+.roi-bar-bg{flex:1;height:22px;background:rgba(46,46,46,.5);border-radius:4px;overflow:hidden}
+.roi-bar-fill{height:100%;border-radius:4px;transition:width .8s ease;min-width:2px}
+.roi-val{width:50px;text-align:right;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;flex-shrink:0}
+.roi-chg{width:80px;text-align:right;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:11px;flex-shrink:0}
+.roi-prev{width:60px;text-align:right;font-family:'Barlow Condensed',sans-serif;font-weight:400;font-size:11px;color:var(--muted);flex-shrink:0}
+@media(max-width:800px){.header-stats{position:static;margin-top:20px;flex-wrap:wrap}.kpi-grid{grid-template-columns:repeat(2,1fr)}.bottom-panels{grid-template-columns:1fr}.funnel-stats{flex-wrap:wrap;gap:24px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header" style="animation:fadeUp .5s ease both">
+  <div class="header-dot-grid"></div>
+  <div class="header-stats">
+    <div class="header-stat">
+      <div class="header-stat-label">Leads</div>
+      <div class="header-stat-value">198</div>
+      <div class="header-stat-change chg-dn">↓ 3.4%</div>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-label">Estimates</div>
+      <div class="header-stat-value">47</div>
+      <div class="header-stat-change chg-dn">↓ 46.0%</div>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-label">Sales</div>
+      <div class="header-stat-value">14</div>
+      <div class="header-stat-change chg-dn">↓ 39.1%</div>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-label">Revenue</div>
+      <div class="header-stat-value">$145,985</div>
+      <div class="header-stat-change chg-dn">↓ 29.7%</div>
+    </div>
+  </div>
+  <div class="header-title">WEEKLY <span>ANALYTICS</span></div>
+  <div class="header-badge">MAR 9 — MAR 15, 2026</div>
+</div>
+
+<div class="download-row"><button class="download-btn" onclick="dlCSV()">⬇ Download Data Tables</button></div>
+
+<!-- 01 SANKEY -->
+<div class="section-label"><span class="section-num">01</span><span class="section-name">Conversion Flow</span></div>
+<div class="card d1">
+  <div id="sankey-chart"></div>
+  <div class="funnel-stats">
+    <div class="funnel-stat">
+      <div class="funnel-stat-value" style="color:var(--blue)">198</div>
+      <div class="funnel-stat-label">Total Leads</div>
+      <div class="funnel-stat-chg chg-dn">↓ 3.4% <span style="color:var(--muted)">(was 205)</span></div>
+    </div>
+    <div class="funnel-arrow">→ 23.7%</div>
+    <div class="funnel-stat">
+      <div class="funnel-stat-value" style="color:var(--amber)">47</div>
+      <div class="funnel-stat-label">Estimates</div>
+      <div class="funnel-stat-chg chg-dn">↓ 46.0% <span style="color:var(--muted)">(was 87)</span></div>
+    </div>
+    <div class="funnel-arrow">→ 29.8%</div>
+    <div class="funnel-stat">
+      <div class="funnel-stat-value" style="color:var(--green)">14</div>
+      <div class="funnel-stat-label">Closed Sales</div>
+      <div class="funnel-stat-chg chg-dn">↓ 39.1% <span style="color:var(--muted)">(was 23)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 REP LEADERBOARD -->
+<div class="section-label"><span class="section-num">02</span><span class="section-name">Revenue by Sales Rep</span></div>
+<div class="card d2">
+  <table class="tb">
+    <thead><tr><th style="width:50px">#</th><th>Sales Representative</th><th style="text-align:center">Deals</th><th style="text-align:right">Revenue</th><th style="text-align:right">Avg Deal</th><th style="width:180px">Revenue Share</th></tr></thead>
+    <tbody id="rep-tbody"></tbody>
+  </table>
+</div>
+
+<!-- 03 HISTORICAL -->
+<div class="section-label"><span class="section-num">03</span><span class="section-name">Historical Performance</span></div>
+<div class="card d3">
+  <div class="toggle-row">
+    <button class="toggle-btn active" onclick="sw('trend',this)">Weekly Trend</button>
+    <button class="toggle-btn" onclick="sw('src-rev',this)">Revenue by Lead Source</button>
+    <button class="toggle-btn" onclick="sw('src-deals',this)">Deals by Source</button>
+    <button class="toggle-btn" onclick="sw('st-rev',this)">Revenue by State</button>
+  </div>
+  <div class="cc active" id="view-trend" style="height:360px"><canvas id="c-trend"></canvas></div>
+  <div class="cc" id="view-src-rev"><canvas id="c-src-rev"></canvas></div>
+  <div class="cc" id="view-src-deals"><canvas id="c-src-deals"></canvas></div>
+  <div class="cc" id="view-st-rev"><canvas id="c-st-rev"></canvas></div>
+</div>
+
+<!-- 04 COMMAND CENTER -->
+<div class="section-label"><span class="section-num">04</span><span class="section-name">Command Center — Key Metrics</span></div>
+<div class="card d4">
+  <div class="kpi-grid">
+    <div class="kpi kpi-r">
+      <div class="kpi-label">Total Revenue</div>
+      <div class="kpi-value" style="color:var(--red)">$145,985</div>
+      <div class="kpi-chg chg-dn">↓ 29.7% vs prior ($207,807)</div>
+      <div class="kpi-sub">14 deals closed this week</div>
+    </div>
+    <div class="kpi kpi-w">
+      <div class="kpi-label">Total Leads</div>
+      <div class="kpi-value">198</div>
+      <div class="kpi-chg chg-dn">↓ 3.4% vs prior (205)</div>
+      <div class="kpi-sub">Across all states &amp; boards</div>
+    </div>
+    <div class="kpi kpi-a">
+      <div class="kpi-label">Estimates Given</div>
+      <div class="kpi-value" style="color:var(--amber)">47</div>
+      <div class="kpi-chg chg-dn">↓ 46.0% vs prior (87)</div>
+      <div class="kpi-sub">23.7% lead-to-estimate rate (was 42.4%)</div>
+    </div>
+    <div class="kpi kpi-g">
+      <div class="kpi-label">Deals Closed</div>
+      <div class="kpi-value" style="color:var(--green)">14</div>
+      <div class="kpi-chg chg-dn">↓ 39.1% vs prior (23)</div>
+      <div class="kpi-sub">29.8% est→close · 7.1% lead→sale</div>
+    </div>
+    <div class="kpi kpi-gr">
+      <div class="kpi-label">Marketing Spend</div>
+      <div class="kpi-value" style="color:var(--grey)">$12,854</div>
+      <div class="kpi-chg chg-up">↓ 6.7% saved vs prior ($13,776)</div>
+      <div class="kpi-sub">FB: $7,127 · Google: $5,728</div>
+    </div>
+    <div class="kpi kpi-b">
+      <div class="kpi-label">Overall ROI</div>
+      <div class="kpi-value" style="color:var(--blue)">11.4×</div>
+      <div class="kpi-chg chg-dn">↓ from 15.1× prior wk</div>
+      <div class="kpi-sub">Revenue ÷ total ad spend</div>
+    </div>
+  </div>
+
+  <div class="bottom-panels">
+    <div class="panel">
+      <div class="panel-title">ROI by State — vs Prior Week</div>
+      <div id="roi-bars"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">ROI by Lead Source</div>
+      <table class="tb">
+        <thead><tr><th>Lead Source</th><th style="text-align:right">Mktg Exp</th><th style="text-align:right">Revenue</th><th style="text-align:right">Avg Deal</th><th style="text-align:right">Share</th></tr></thead>
+        <tbody id="src-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+const R=[
+  {n:'J Kerr',d:4,r:41406.39,a:10351.60,s:28.4},
+  {n:'Nick Stramaglio',d:2,r:38940,a:19470,s:26.7},
+  {n:'Sindy Thonhoff',d:2,r:32318.50,a:16159.25,s:22.1},
+  {n:'Allan Ellison',d:1,r:17250,a:17250,s:11.8},
+  {n:'Adam Rogers',d:2,r:6800,a:3400,s:4.7},
+  {n:'Deana Buckley',d:2,r:5200,a:2600,s:3.6},
+  {n:'Elena Ledoux',d:1,r:4070,a:4070,s:2.8},
+];
+const S=[
+  {n:'Unknown',d:6,r:63556.39,a:10592.73,s:43.5,sp:null},
+  {n:'Referral',d:1,r:31790,a:31790,s:21.8,sp:null},
+  {n:'Youtube',d:1,r:18318.50,a:18318.50,s:12.5,sp:null},
+  {n:'Google',d:2,r:16650,a:8325,s:11.4,sp:5727.66},
+  {n:'Facebook',d:2,r:9700,a:4850,s:6.6,sp:7126.58},
+  {n:'Returning Client',d:2,r:5970,a:2985,s:4.1,sp:null},
+];
+const ST=[
+  {st:'TX',roi:151.6,pr:101.8,rev:46701.39,prev:48211.15,sp:308.02},
+  {st:'NV',roi:15.3,pr:13.7,rev:80528.50,prev:61209,sp:5247.53},
+  {st:'CA',roi:3.3,pr:12.5,rev:7450,prev:57282.79,sp:2277.45},
+  {st:'OTHER',roi:2.7,pr:9.0,rev:9405,prev:20712.50,sp:3437.75},
+  {st:'AZ',roi:1.2,pr:10.4,rev:1900,prev:20392,sp:1583.49},
+];
+const HW=['Dec 08','Dec 15','Dec 29','Jan 05','Jan 12','Jan 19','Jan 26','Feb 02','Feb 09','Feb 16','Feb 23','Mar 02','Mar 09'];
+const HR=[145313,82495,85822,318264,168125,254510,137435,133883,110901,133430,107328,207807,145985];
+const HL=[175,160,160,185,186,201,250,213,199,180,212,205,198];
+const HE=[30,28,40,38,68,53,32,37,46,45,42,87,47];
+const HS=[12,9,11,20,13,18,9,17,13,17,15,23,14];
+const HM=[12923,11697,9323,10566,10588,11065,15951,16252,15467,14605,15441,13776,12854];
+const fmt=v=>'$'+v.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});
+
+// Rep table
+const rt=document.getElementById('rep-tbody');
+R.forEach((r,i)=>{
+  const rk=i+1,c=rk===1?'r1':rk===2?'r2':rk===3?'r3':'ro';
+  rt.innerHTML+=`<tr><td><span class="rb ${c}">${rk}</span></td><td style="font-weight:600">${r.n}</td><td style="text-align:center">${r.d}</td><td style="text-align:right">${fmt(r.r)}</td><td style="text-align:right;color:var(--muted)">${fmt(r.a)}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="sb-bg" style="flex:1"><div class="sb-fill" style="width:${r.s}%"></div></div><span style="font-size:13px;color:var(--muted);width:40px;text-align:right">${r.s}%</span></div></td></tr>`;
+});
+
+// Source table
+const st=document.getElementById('src-tbody');
+S.forEach(s=>{
+  const sp=s.sp!==null?fmt(s.sp):'—';
+  const roi=s.sp!==null?(s.r/s.sp).toFixed(1)+'×':'';
+  st.innerHTML+=`<tr><td style="font-weight:600">${s.n}${roi?'<br><span style="font-size:11px;color:var(--muted)">'+roi+' ROI</span>':''}</td><td style="text-align:right;color:var(--muted)">${sp}</td><td style="text-align:right">${fmt(s.r)}</td><td style="text-align:right;color:var(--muted)">${fmt(s.a)}</td><td style="text-align:right">${s.s}%</td></tr>`;
+});
+
+// ROI bars with WoW
+const rb=document.getElementById('roi-bars');
+const mx=20;
+ST.forEach(s=>{
+  const cl=s.roi>=8?'var(--green)':s.roi>=4?'var(--amber)':s.roi>0?'var(--red)':'var(--darkgrey)';
+  const pct=Math.min(s.roi/mx*100,100);
+  const dr=s.roi>=100?s.roi.toFixed(0)+'×':s.roi.toFixed(1)+'×';
+  const rc=((s.rev-s.prev)/s.prev*100);
+  const rcs=rc>=0?'↑ '+rc.toFixed(0)+'%':'↓ '+Math.abs(rc).toFixed(0)+'%';
+  const rcc=rc>=0?'chg-up':'chg-dn';
+  const prs=s.pr>=100?s.pr.toFixed(0)+'×':s.pr.toFixed(1)+'×';
+  rb.innerHTML+=`<div class="roi-row"><div class="roi-label">${s.st}</div><div class="roi-bar-bg"><div class="roi-bar-fill" style="width:${pct}%;background:${cl}"></div></div><div class="roi-val" style="color:${cl}">${dr}</div><div class="roi-prev">(${prs})</div><div class="roi-chg ${rcc}">${rcs}</div></div>`;
+});
+
+// Sankey
+google.charts.load('current',{'packages':['sankey']});
+google.charts.setOnLoadCallback(dS);
+function dS(){
+  const d=new google.visualization.DataTable();
+  d.addColumn('string','From');d.addColumn('string','To');d.addColumn('number','Weight');
+  d.addRows([['Total Leads (198)','Estimated (47)',47],['Total Leads (198)','Not Estimated (151)',151],['Estimated (47)','Closed Sales (14)',14],['Estimated (47)','Not Closed (33)',33]]);
+  new google.visualization.Sankey(document.getElementById('sankey-chart')).draw(d,{height:260,sankey:{node:{colors:['#4a9fd4','#f0a500','#444444','#3dba72','#333333'],label:{fontName:'Barlow Condensed',fontSize:14,color:'#f0f0f0',bold:true},nodePadding:30,width:20},link:{colorMode:'gradient',colors:['#4a9fd4','#f0a500','#444444','#3dba72','#333333']}},backgroundColor:'transparent',tooltip:{isHtml:true}});
+}
+
+// Charts
+const cc=['#e63518','#4a9fd4','#f0a500','#3dba72','#aaaaaa','#888888'];
+Chart.defaults.color='#888';Chart.defaults.font.family="'Barlow Condensed',sans-serif";Chart.defaults.font.weight=500;
+
+// Trend
+new Chart(document.getElementById('c-trend').getContext('2d'),{
+  type:'line',
+  data:{labels:HW,datasets:[
+    {label:'Revenue ($)',data:HR,borderColor:'#e63518',backgroundColor:'rgba(230,53,24,0.08)',tension:.3,yAxisID:'y',borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#e63518',fill:true},
+    {label:'Leads',data:HL,borderColor:'#4a9fd4',tension:.3,yAxisID:'y1',borderWidth:2,pointRadius:3,pointBackgroundColor:'#4a9fd4'},
+    {label:'Estimates',data:HE,borderColor:'#f0a500',tension:.3,yAxisID:'y1',borderWidth:2,pointRadius:3,pointBackgroundColor:'#f0a500'},
+    {label:'Sales',data:HS,borderColor:'#3dba72',tension:.3,yAxisID:'y1',borderWidth:2,pointRadius:3,pointBackgroundColor:'#3dba72'},
+    {label:'Mktg Spend ($)',data:HM,borderColor:'#aaaaaa',borderDash:[5,5],tension:.3,yAxisID:'y',borderWidth:1.5,pointRadius:3,pointBackgroundColor:'#aaaaaa'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{position:'top',labels:{usePointStyle:true,boxWidth:8,padding:16,font:{size:12}}},
+    tooltip:{callbacks:{label:function(ctx){const v=ctx.parsed.y,idx=ctx.dataIndex;if(idx>0){const p=ctx.dataset.data[idx-1],pc=((v-p)/p*100).toFixed(1),ar=pc>=0?'↑':'↓',fv=ctx.dataset.label.includes('$')?'$'+v.toLocaleString():v;return ctx.dataset.label+': '+fv+' ('+ar+' '+Math.abs(pc)+'% WoW)'}const fv=ctx.dataset.label.includes('$')?'$'+v.toLocaleString():v;return ctx.dataset.label+': '+fv}}}},
+    scales:{y:{type:'linear',position:'left',grid:{color:'rgba(46,46,46,.5)',drawBorder:false},ticks:{callback:v=>'$'+(v/1000).toFixed(0)+'k'}},y1:{type:'linear',position:'right',grid:{display:false},ticks:{stepSize:25}},x:{grid:{color:'rgba(46,46,46,.3)',drawBorder:false},ticks:{font:{size:11}}}}}
+});
+
+function hb(id,l,v,c){new Chart(document.getElementById(id).getContext('2d'),{type:'bar',data:{labels:l,datasets:[{data:v,backgroundColor:c,borderRadius:3,barThickness:28}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(46,46,46,.5)',drawBorder:false},ticks:{callback:v=>typeof v==='number'&&v>=1000?'$'+(v/1000).toFixed(0)+'k':v}},y:{grid:{display:false},ticks:{font:{size:14,weight:600}}}}}})}
+
+hb('c-src-rev',S.map(s=>s.n),S.map(s=>s.r),S.map((_,i)=>cc[i%cc.length]));
+hb('c-src-deals',S.map(s=>s.n),S.map(s=>s.d),S.map((_,i)=>cc[i%cc.length]));
+hb('c-st-rev',['NV','TX','OTHER','CA','AZ'],[80528.50,46701.39,9405,7450,1900],['#e63518','#4a9fd4','#aaaaaa','#f0a500','#3dba72']);
+
+function sw(id,btn){document.querySelectorAll('.cc').forEach(c=>c.classList.remove('active'));document.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));document.getElementById('view-'+id).classList.add('active');btn.classList.add('active')}
+
+function dlCSV(){
+  let c='BOSS Security Screens — Weekly Report: Mar 9-15 2026\n\n';
+  c+='WEEKLY SUMMARY BY STATE (with WoW comparison)\n';
+  c+='State,Leads,Leads Prior,Leads %Chg,Estimates,Est Prior,Est %Chg,Sales,Sales Prior,Sales %Chg,Revenue,Rev Prior,Rev %Chg,Total Spend,Spend Prior,Spend %Chg,ROI,ROI Prior\n';
+  [['NV',26,29,-10.3,10,15,-33.3,7,7,0.0,80528.50,61209,31.6,5247.53,4457.29,17.7,15.3,13.7],['AZ',28,33,-15.2,10,14,-28.6,1,5,-80.0,1900,20392,-90.7,1583.49,1954.69,-19.0,1.2,10.4],['CA',80,75,6.7,14,36,-61.1,2,6,-66.7,7450,57282.79,-87.0,2277.45,4587.24,-50.3,3.3,12.5],['TX',3,10,-70.0,0,5,-100.0,3,2,50.0,46701.39,48211.15,-3.1,308.02,473.44,-34.9,151.6,101.8],['OTHER',61,58,5.2,13,17,-23.5,1,3,-66.7,9405,20712.50,-54.6,3437.75,2303.63,49.2,2.7,9.0],['TOTAL',198,205,-3.4,47,87,-46.0,14,23,-39.1,145984.89,207807.44,-29.7,12854.24,13776.29,-6.7,11.4,15.1]].forEach(r=>c+=r.join(',')+'\n');
+  c+='\nSALES BY REP\nRep,Deals,Revenue,Avg Deal,Revenue Share %\n';
+  R.forEach(r=>c+=r.n+','+r.d+','+r.r.toFixed(2)+','+r.a.toFixed(2)+','+r.s+'\n');
+  c+='\nLEAD SOURCE ROI\nSource,Deals,Revenue,Avg Deal,Mktg Spend,Revenue Share %\n';
+  S.forEach(s=>c+=s.n+','+s.d+','+s.r.toFixed(2)+','+s.a.toFixed(2)+','+(s.sp!==null?s.sp.toFixed(2):'')+','+s.s+'\n');
+  c+='\nHISTORICAL WEEKLY DATA\nWeek,Revenue,Leads,Estimates,Sales,Mktg Spend\n';
+  HW.forEach((w,i)=>c+=w+','+HR[i]+','+HL[i]+','+HE[i]+','+HS[i]+','+HM[i]+'\n');
+  const b=new Blob([c],{type:'text/csv'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='boss_data_2026-03-09_2026-03-15.csv';a.click();
+}
+window.addEventListener('resize',()=>{dS()});
+</script>
+</body>
+</html>
