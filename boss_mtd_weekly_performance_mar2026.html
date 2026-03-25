@@ -1,0 +1,172 @@
+<div style="padding: 1rem 0;">
+<div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 1.5rem;">
+  <div style="flex:1; min-width:120px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem;">
+    <div style="font-size:12px; color: var(--color-text-secondary); margin-bottom:4px;">MTD revenue</div>
+    <div style="font-size:24px; font-weight:500; color: var(--color-text-primary);">$545,042</div>
+  </div>
+  <div style="flex:1; min-width:120px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem;">
+    <div style="font-size:12px; color: var(--color-text-secondary); margin-bottom:4px;">MTD leads</div>
+    <div style="font-size:24px; font-weight:500; color: var(--color-text-primary);">786</div>
+  </div>
+  <div style="flex:1; min-width:120px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem;">
+    <div style="font-size:12px; color: var(--color-text-secondary); margin-bottom:4px;">MTD estimates</div>
+    <div style="font-size:24px; font-weight:500; color: var(--color-text-primary);">204</div>
+  </div>
+  <div style="flex:1; min-width:120px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem;">
+    <div style="font-size:12px; color: var(--color-text-secondary); margin-bottom:4px;">MTD sales</div>
+    <div style="font-size:24px; font-weight:500; color: var(--color-text-primary);">64</div>
+  </div>
+</div>
+
+<div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:8px; font-size:12px; color: var(--color-text-secondary);">
+  <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#E24B4A;"></span>Revenue ($)</span>
+  <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD;"></span>Leads</span>
+  <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#EF9F27;"></span>Estimates</span>
+  <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75;"></span>Sales (deals closed)</span>
+  <span style="display:flex; align-items:center; gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#73726c;"></span>Marketing spend ($)</span>
+</div>
+
+<div style="position:relative; width:100%; height:380px;">
+  <canvas id="perfChart"></canvas>
+</div>
+
+<p style="font-size:11px; color:var(--color-text-tertiary); margin-top:12px;">* Mar 23–24 is a partial week (2 days). Marketing spend for non-W3 weeks estimated from daily MTD average.</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const labels = ['Mar 1–8', 'Mar 9–15', 'Mar 16–22', 'Mar 23–24*'];
+const revenue = [207807, 145985, 151859, 39391];
+const leads = [256, 194, 251, 85];
+const estimates = [78, 45, 54, 27];
+const sales = [23, 14, 20, 7];
+const spend = [14957, 13088, 13345, 3739];
+
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+const tickColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.45)';
+
+new Chart(document.getElementById('perfChart'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [
+      {
+        label: 'Revenue',
+        data: revenue,
+        backgroundColor: '#E24B4A',
+        borderRadius: 4,
+        yAxisID: 'yDollar',
+        order: 2,
+        barPercentage: 0.7,
+        categoryPercentage: 0.75
+      },
+      {
+        label: 'Mktg spend',
+        data: spend,
+        backgroundColor: '#73726c',
+        borderRadius: 4,
+        yAxisID: 'yDollar',
+        order: 3,
+        barPercentage: 0.7,
+        categoryPercentage: 0.75
+      },
+      {
+        label: 'Leads',
+        data: leads,
+        type: 'line',
+        borderColor: '#378ADD',
+        backgroundColor: 'rgba(55,138,221,0.15)',
+        pointBackgroundColor: '#378ADD',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5,
+        fill: false,
+        tension: 0.3,
+        yAxisID: 'yCount',
+        order: 0
+      },
+      {
+        label: 'Estimates',
+        data: estimates,
+        type: 'line',
+        borderColor: '#EF9F27',
+        backgroundColor: 'rgba(239,159,39,0.15)',
+        pointBackgroundColor: '#EF9F27',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5,
+        fill: false,
+        tension: 0.3,
+        yAxisID: 'yCount',
+        order: 0
+      },
+      {
+        label: 'Sales',
+        data: sales,
+        type: 'line',
+        borderColor: '#1D9E75',
+        backgroundColor: 'rgba(29,158,117,0.15)',
+        pointBackgroundColor: '#1D9E75',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5,
+        fill: false,
+        tension: 0.3,
+        yAxisID: 'yCount',
+        order: 0
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: isDark ? '#333' : '#fff',
+        titleColor: isDark ? '#f0f0f0' : '#111',
+        bodyColor: isDark ? '#ccc' : '#333',
+        borderColor: isDark ? '#555' : '#ddd',
+        borderWidth: 1,
+        padding: 12,
+        callbacks: {
+          label: function(ctx) {
+            const v = ctx.raw;
+            if (ctx.dataset.yAxisID === 'yDollar') {
+              return ctx.dataset.label + ': $' + v.toLocaleString();
+            }
+            return ctx.dataset.label + ': ' + v;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: tickColor, font: { size: 13, weight: '500' } }
+      },
+      yDollar: {
+        position: 'left',
+        grid: { color: gridColor },
+        ticks: {
+          color: tickColor,
+          font: { size: 12 },
+          callback: v => '$' + Math.round(v / 1000) + 'K'
+        },
+        title: { display: true, text: 'Dollars ($)', color: tickColor, font: { size: 11 } },
+        beginAtZero: true
+      },
+      yCount: {
+        position: 'right',
+        grid: { drawOnChartArea: false },
+        ticks: { color: tickColor, font: { size: 12 } },
+        title: { display: true, text: 'Count', color: tickColor, font: { size: 11 } },
+        beginAtZero: true,
+        max: 300
+      }
+    }
+  }
+});
+</script>
