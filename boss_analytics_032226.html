@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boss Security Screens — Weekly Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;color:#f0f0f0;font-family:'Barlow',sans-serif;font-weight:400;line-height:1.5;min-height:100vh}
+.left-bar{position:fixed;left:0;top:0;width:5px;height:100%;background:#e63518;z-index:999}
+.container{max-width:1280px;margin:0 auto;padding:24px 32px 60px 40px}
+h1,h2,h3,.stat-num{font-family:'Barlow Condensed',sans-serif}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px;flex-wrap:wrap;gap:20px;position:relative}
+.header-left{flex:1}
+.header-left h1{font-size:42px;font-weight:700;letter-spacing:2px;line-height:1.1}
+.header-left h1 span{color:#e63518}
+.date-badge{display:inline-block;border:1px solid #e63518;color:#e63518;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:500;margin-top:10px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.header-stats{display:flex;gap:24px;flex-wrap:wrap}
+.header-stat{text-align:right}
+.header-stat .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1.5px;font-weight:500}
+.header-stat .val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:600}
+.dot-grid{position:absolute;top:0;right:0;width:120px;height:60px;opacity:0.08;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:8px 8px}
+.download-row{display:flex;justify-content:flex-end;margin-bottom:20px}
+.dl-btn{background:#e63518;color:#fff;border:none;padding:10px 22px;border-radius:6px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.5px;transition:background .2s}
+.dl-btn:hover{background:#cc2e14}
+.section{margin-bottom:36px}
+.section-label{display:inline-flex;align-items:center;gap:8px;margin-bottom:14px}
+.section-num{background:#e63518;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.section-title{font-size:14px;color:#888;text-transform:uppercase;letter-spacing:2px;font-weight:500}
+.card{background:#111;border:1px solid #2e2e2e;border-top:3px solid #e63518;border-radius:8px;padding:24px;margin-bottom:16px}
+.card-dark{background:#181818}
+.tab-btns{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tab-btn{background:#181818;border:1px solid #2e2e2e;color:#888;padding:8px 18px;border-radius:20px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:0.5px;transition:all .2s}
+.tab-btn.active{background:#e63518;color:#fff;border-color:#e63518}
+.tab-btn:hover:not(.active){border-color:#888;color:#f0f0f0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:#888;font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:1px;padding:10px 12px;border-bottom:1px solid #2e2e2e}
+td{padding:10px 12px;border-bottom:1px solid #1e1e1e;color:#ccc}
+tr:hover td{background:#1a1a1a}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:#111;border:1px solid #2e2e2e;border-radius:8px;padding:18px;position:relative;overflow:hidden}
+.kpi .kpi-label{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1.5px;font-weight:500;margin-bottom:6px}
+.kpi .kpi-val{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:700;line-height:1.1}
+.kpi .kpi-sub{font-size:12px;color:#888;margin-top:4px}
+.kpi .kpi-accent{position:absolute;top:0;left:0;width:100%;height:3px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.stat-row{display:flex;gap:32px;justify-content:center;padding:16px;flex-wrap:wrap}
+.stat-item{text-align:center}
+.stat-item .stat-num{font-size:32px;font-weight:700}
+.stat-item .stat-label{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px}
+.stat-item .stat-rate{font-size:14px;color:#e63518;font-weight:600;font-family:'Barlow Condensed',sans-serif}
+.period-toggle{display:flex;gap:6px;margin-bottom:20px}
+.period-btn{background:#181818;border:1px solid #2e2e2e;color:#888;padding:8px 20px;border-radius:20px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:500;letter-spacing:0.5px;transition:all .2s}
+.period-btn.active{background:#e63518;color:#fff;border-color:#e63518}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp 0.4s ease-out both}
+@media(max-width:768px){
+    .kpi-grid{grid-template-columns:1fr 1fr}
+    .two-col{grid-template-columns:1fr}
+    .header{flex-direction:column}
+    .header-stats{justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="left-bar"></div>
+<div class="container">
+
+<!-- HEADER -->
+<div class="header fade-up">
+    <div class="header-left">
+        <div class="dot-grid"></div>
+        <h1>WEEKLY <span>ANALYTICS</span></h1>
+        <div class="date-badge">MAR 16 — MAR 22, 2026</div>
+        <div class="date-badge" style="margin-left:6px;opacity:0.6">MTD: MAR 1 — MAR 24</div>
+    </div>
+    <div class="header-stats">
+        <div class="header-stat"><div class="label">Leads</div><div class="val">251</div><div style="font-size:11px;color:#666">MTD 786</div></div>
+        <div class="header-stat"><div class="label">Estimates</div><div class="val">54</div><div style="font-size:11px;color:#666">MTD 204</div></div>
+        <div class="header-stat"><div class="label">Sales</div><div class="val">20</div><div style="font-size:11px;color:#666">MTD 64</div></div>
+        <div class="header-stat"><div class="label">Revenue</div><div class="val" style="color:#3dba72">$151,859</div><div style="font-size:11px;color:#666">MTD $545,042</div></div>
+    </div>
+</div>
+
+<!-- DOWNLOAD -->
+<div class="download-row">
+    <button class="dl-btn" onclick="downloadCSV()">⬇ Download Data Tables</button>
+</div>
+
+<!-- PERIOD TOGGLE -->
+<div class="period-toggle">
+    <div class="period-btn active" onclick="setPeriod('wk',this)">WEEKLY (Mar 16–22)</div>
+    <div class="period-btn" onclick="setPeriod('mtd',this)">MTD (Mar 1–24)</div>
+</div>
+
+<!-- 01 SANKEY -->
+<div class="section">
+    <div class="section-label"><span class="section-num">01</span><span class="section-title">Conversion Flow</span></div>
+    <div class="card" id="sankey-card">
+        <div id="sankey-chart" style="width:100%;height:280px"></div>
+        <div class="stat-row" id="sankey-stats">
+            <div class="stat-item"><div class="stat-num" id="sk-leads">251</div><div class="stat-label">Total Leads</div></div>
+            <div class="stat-item"><div class="stat-rate" id="sk-rate1">21.5%</div><div class="stat-label">Lead → Estimate</div></div>
+            <div class="stat-item"><div class="stat-num" id="sk-est" style="color:#f0a500">54</div><div class="stat-label">Estimates</div></div>
+            <div class="stat-item"><div class="stat-rate" id="sk-rate2">37.0%</div><div class="stat-label">Estimate → Close</div></div>
+            <div class="stat-item"><div class="stat-num" id="sk-sales" style="color:#3dba72">20</div><div class="stat-label">Closed Sales</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- 02 REVENUE BY REP -->
+<div class="section">
+    <div class="section-label"><span class="section-num">02</span><span class="section-title">Revenue by Sales Rep</span></div>
+    <div class="card" id="rep-card">
+        <table>
+            <thead><tr><th>#</th><th>Sales Representative</th><th>Deals</th><th>Revenue</th><th>Avg Deal</th><th>Revenue Share</th></tr></thead>
+            <tbody id="rep-tbody"><tr class="fade-up" style="animation-delay:0.0s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#e63518;color:#fff;font-weight:600;font-size:13px">1</span></td>
+            <td style="font-weight:500">Adam Rogers</td>
+            <td>4</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$72,133</td>
+            <td>$18,033</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:47.5000367117276%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">47.5%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.05s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#f0f0f0;color:#111;font-weight:600;font-size:13px">2</span></td>
+            <td style="font-weight:500">Sindy Thonhoff</td>
+            <td>3</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$30,527</td>
+            <td>$10,176</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:20.10222257079157%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">20.1%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.1s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#888;color:#fff;font-weight:600;font-size:13px">3</span></td>
+            <td style="font-weight:500">Nick Stramaglio</td>
+            <td>4</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$24,820</td>
+            <td>$6,205</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:16.34412697635034%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">16.3%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.15000000000000002s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">4</span></td>
+            <td style="font-weight:500">Deana Buckley</td>
+            <td>5</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$15,029</td>
+            <td>$3,006</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:9.89669155227918%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">9.9%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.2s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">5</span></td>
+            <td style="font-weight:500">J Kerr</td>
+            <td>4</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$9,350</td>
+            <td>$2,337</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:6.1569221888513175%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">6.2%</span></div></td>
+        </tr></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 03 HISTORICAL / SOURCE VIEWS -->
+<div class="section">
+    <div class="section-label"><span class="section-num">03</span><span class="section-title">Performance Breakdown</span></div>
+    <div class="card">
+        <div class="tab-btns">
+            <div class="tab-btn active" onclick="showSourceView('rev',this)">Revenue by Lead Source</div>
+            <div class="tab-btn" onclick="showSourceView('leads',this)">Leads by Source</div>
+            <div class="tab-btn" onclick="showSourceView('deals',this)">Deals by Source</div>
+        </div>
+        <div id="source-chart-container" style="height:320px;position:relative">
+            <canvas id="source-chart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- 04 COMMAND CENTER -->
+<div class="section">
+    <div class="section-label"><span class="section-num">04</span><span class="section-title">Command Center — Key Metrics</span></div>
+    <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi fade-up" style="animation-delay:0.05s">
+            <div class="kpi-accent" style="background:#e63518"></div>
+            <div class="kpi-label">Total Revenue</div>
+            <div class="kpi-val" id="kpi-rev" style="color:#e63518">$151,859</div>
+            <div class="kpi-sub" id="kpi-rev-sub">MTD: $545,042</div>
+        </div>
+        <div class="kpi fade-up" style="animation-delay:0.1s">
+            <div class="kpi-accent" style="background:#f0f0f0"></div>
+            <div class="kpi-label">Total Leads</div>
+            <div class="kpi-val" id="kpi-leads">251</div>
+            <div class="kpi-sub" id="kpi-leads-sub">MTD: 786</div>
+        </div>
+        <div class="kpi fade-up" style="animation-delay:0.15s">
+            <div class="kpi-accent" style="background:#f0a500"></div>
+            <div class="kpi-label">Estimates Given</div>
+            <div class="kpi-val" id="kpi-est" style="color:#f0a500">54</div>
+            <div class="kpi-sub" id="kpi-est-sub">Lead→Est: 21.5% · MTD: 204</div>
+        </div>
+        <div class="kpi fade-up" style="animation-delay:0.2s">
+            <div class="kpi-accent" style="background:#3dba72"></div>
+            <div class="kpi-label">Deals Closed</div>
+            <div class="kpi-val" id="kpi-sales" style="color:#3dba72">20</div>
+            <div class="kpi-sub" id="kpi-sales-sub">Est→Close: 37.0% · Overall: 8.0%</div>
+        </div>
+        <div class="kpi fade-up" style="animation-delay:0.25s">
+            <div class="kpi-accent" style="background:#aaa"></div>
+            <div class="kpi-label">Marketing Spend</div>
+            <div class="kpi-val" id="kpi-spend">$13,345</div>
+            <div class="kpi-sub" id="kpi-spend-sub">FB: $7,294 · Google: $6,051</div>
+        </div>
+        <div class="kpi fade-up" style="animation-delay:0.3s">
+            <div class="kpi-accent" style="background:#4a9fd4"></div>
+            <div class="kpi-label">Overall ROI</div>
+            <div class="kpi-val" id="kpi-roi" style="color:#4a9fd4">11.4x</div>
+            <div class="kpi-sub" id="kpi-roi-sub">MTD: 12.1x</div>
+        </div>
+    </div>
+
+    <div class="two-col">
+        <div class="card card-dark">
+            <h3 style="font-size:15px;font-weight:600;margin-bottom:14px;color:#f0f0f0;letter-spacing:1px">ROI BY STATE</h3>
+            <div id="roi-bars"><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">AZ</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:100.0%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">21.4x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">NV</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:56.13247763618611%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">12.0x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">OTHER</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:44.38558494953917%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">9.5x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">CA</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:38.0392520366803%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">8.1x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">TX</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:0.0%;height:100%;background:#555;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#555">0.0x</span>
+        </div></div>
+        </div>
+        <div class="card card-dark">
+            <h3 style="font-size:15px;font-weight:600;margin-bottom:14px;color:#f0f0f0;letter-spacing:1px">ROI BY LEAD SOURCE</h3>
+            <table style="font-size:13px">
+                <thead><tr><th>Source</th><th>Mktg $</th><th>Revenue</th><th>Avg Deal</th><th>Share</th></tr></thead>
+                <tbody id="source-roi-tbody"><tr>
+            <td style="font-weight:500">Returning Client<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$49,247</td>
+            <td>$8,208</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:32.42946096713638%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">32.4%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Unknown<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$46,917</td>
+            <td>$9,383</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:30.895029284764014%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">30.9%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Google<br><span style="color:#888;font-size:12px">6.7x ROI</span></td>
+            <td>$6,051</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$40,573</td>
+            <td>$10,143</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:26.71757710763345%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">26.7%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Facebook<br><span style="color:#888;font-size:12px">1.2x ROI</span></td>
+            <td>$7,294</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$8,836</td>
+            <td>$2,945</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:5.818561884086687%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">5.8%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Referral<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$6,286</td>
+            <td>$3,143</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:4.139370756379461%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">4.1%</span></div></td>
+        </tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div style="text-align:center;padding:30px 0;color:#333;font-size:12px;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px">
+    BOSS SECURITY SCREENS · CONFIDENTIAL · GENERATED MAR 25, 2026
+</div>
+
+</div>
+
+<script>
+// Data for both periods
+const DATA = {
+    wk: {
+        sankey: {"leads": 251, "estimated": 54, "not_estimated": 197, "closed": 20, "not_closed": 34},
+        totals: {"leads": 251, "estimates": 54, "sales": 20, "revenue": 151858.83000000002, "fb_spend": 7293.67, "ggl_spend": 6051.26, "total_spend": 13344.93, "roi": 11.379514916901027},
+        reps: `<tr class="fade-up" style="animation-delay:0.0s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#e63518;color:#fff;font-weight:600;font-size:13px">1</span></td>
+            <td style="font-weight:500">Adam Rogers</td>
+            <td>4</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$72,133</td>
+            <td>$18,033</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:47.5000367117276%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">47.5%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.05s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#f0f0f0;color:#111;font-weight:600;font-size:13px">2</span></td>
+            <td style="font-weight:500">Sindy Thonhoff</td>
+            <td>3</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$30,527</td>
+            <td>$10,176</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:20.10222257079157%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">20.1%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.1s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#888;color:#fff;font-weight:600;font-size:13px">3</span></td>
+            <td style="font-weight:500">Nick Stramaglio</td>
+            <td>4</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$24,820</td>
+            <td>$6,205</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:16.34412697635034%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">16.3%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.15000000000000002s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">4</span></td>
+            <td style="font-weight:500">Deana Buckley</td>
+            <td>5</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$15,029</td>
+            <td>$3,006</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:9.89669155227918%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">9.9%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.2s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">5</span></td>
+            <td style="font-weight:500">J Kerr</td>
+            <td>4</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$9,350</td>
+            <td>$2,337</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:6.1569221888513175%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">6.2%</span></div></td>
+        </tr>`,
+        roiBars: `<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">AZ</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:100.0%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">21.4x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">NV</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:56.13247763618611%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">12.0x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">OTHER</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:44.38558494953917%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">9.5x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">CA</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:38.0392520366803%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">8.1x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">TX</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:0.0%;height:100%;background:#555;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#555">0.0x</span>
+        </div>`,
+        sourceRoi: `<tr>
+            <td style="font-weight:500">Returning Client<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$49,247</td>
+            <td>$8,208</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:32.42946096713638%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">32.4%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Unknown<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$46,917</td>
+            <td>$9,383</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:30.895029284764014%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">30.9%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Google<br><span style="color:#888;font-size:12px">6.7x ROI</span></td>
+            <td>$6,051</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$40,573</td>
+            <td>$10,143</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:26.71757710763345%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">26.7%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Facebook<br><span style="color:#888;font-size:12px">1.2x ROI</span></td>
+            <td>$7,294</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$8,836</td>
+            <td>$2,945</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:5.818561884086687%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">5.8%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Referral<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$6,286</td>
+            <td>$3,143</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:4.139370756379461%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">4.1%</span></div></td>
+        </tr>`,
+        sources: [{"name": "Returning Client", "deals": 6, "revenue": 49247.0, "avg": 8207.833333333334, "share": 32.42946096713638}, {"name": "Unknown", "deals": 5, "revenue": 46916.83, "avg": 9383.366, "share": 30.895029284764014}, {"name": "Google", "deals": 4, "revenue": 40573.0, "avg": 10143.25, "share": 26.71757710763345}, {"name": "Facebook", "deals": 3, "revenue": 8836.0, "avg": 2945.3333333333335, "share": 5.818561884086687}, {"name": "Referral", "deals": 2, "revenue": 6286.0, "avg": 3143.0, "share": 4.139370756379461}],
+        states: [{"state": "NV", "leads": 54, "estimates": 13, "deals": 12, "revenue": 70376.0, "fb_spend": 4022.22, "ggl_spend": 1849.4, "total_spend": 5871.62, "roi": 11.985789271104057}, {"state": "AZ", "leads": 26, "estimates": 21, "deals": 2, "revenue": 30930.0, "fb_spend": 804.32, "ggl_spend": 644.21, "total_spend": 1448.5300000000002, "roi": 21.352681684190177}, {"state": "CA", "leads": 82, "estimates": 18, "deals": 2, "revenue": 19860.0, "fb_spend": 1091.6, "ggl_spend": 1353.49, "total_spend": 2445.09, "roi": 8.122400402439174}, {"state": "TX", "leads": 11, "estimates": 0, "deals": 0, "revenue": 0, "fb_spend": 307.32, "ggl_spend": 33.88, "total_spend": 341.2, "roi": 0.0}, {"state": "OTHER", "leads": 78, "estimates": 2, "deals": 4, "revenue": 30692.83, "fb_spend": 1068.21, "ggl_spend": 2170.28, "total_spend": 3238.4900000000002, "roi": 9.477512667940923}],
+    },
+    mtd: {
+        sankey: {"leads": 786, "estimated": 204, "not_estimated": 582, "closed": 64, "not_closed": 140},
+        totals: {"leads": 786, "estimates": 204, "sales": 64, "revenue": 545042.16, "fb_spend": 25558.48, "ggl_spend": 19570.940000000002, "total_spend": 45129.42, "roi": 12.077313645954236},
+        reps: `<tr class="fade-up" style="animation-delay:0.0s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#e63518;color:#fff;font-weight:600;font-size:13px">1</span></td>
+            <td style="font-weight:500">Sindy Thonhoff</td>
+            <td>11</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$131,710</td>
+            <td>$11,974</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:24.165194853917356%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">24.2%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.05s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#f0f0f0;color:#111;font-weight:600;font-size:13px">2</span></td>
+            <td style="font-weight:500">Adam Rogers</td>
+            <td>13</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$108,225</td>
+            <td>$8,325</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:19.85626212841957%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">19.9%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.1s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#888;color:#fff;font-weight:600;font-size:13px">3</span></td>
+            <td style="font-weight:500">Nick Stramaglio</td>
+            <td>11</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$91,270</td>
+            <td>$8,297</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:16.74549359631189%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">16.7%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.15000000000000002s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">4</span></td>
+            <td style="font-weight:500">J Kerr</td>
+            <td>12</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$90,046</td>
+            <td>$7,504</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:16.520833911270273%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">16.5%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.2s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">5</span></td>
+            <td style="font-weight:500">David Mauney</td>
+            <td>4</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$58,600</td>
+            <td>$14,650</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:10.751489389371272%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">10.8%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.25s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">6</span></td>
+            <td style="font-weight:500">Deana Buckley</td>
+            <td>9</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$27,230</td>
+            <td>$3,026</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:4.995943800017232%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">5.0%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.30000000000000004s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">7</span></td>
+            <td style="font-weight:500">Allan Ellison</td>
+            <td>1</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$17,250</td>
+            <td>$17,250</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:3.1648927855415807%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">3.2%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.35000000000000003s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">8</span></td>
+            <td style="font-weight:500">Robert Jones</td>
+            <td>1</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$9,454</td>
+            <td>$9,454</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:1.734544718522325%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">1.7%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.4s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">9</span></td>
+            <td style="font-weight:500">Mike Newman</td>
+            <td>1</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$7,187</td>
+            <td>$7,187</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:1.3186135912862227%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">1.3%</span></div></td>
+        </tr><tr class="fade-up" style="animation-delay:0.45s">
+            <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#444;color:#fff;font-weight:600;font-size:13px">10</span></td>
+            <td style="font-weight:500">Elena Ledoux</td>
+            <td>1</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600;color:#f0f0f0">$4,070</td>
+            <td>$4,070</td>
+            <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:#222;border-radius:3px;height:8px;overflow:hidden"><div style="width:0.7467312253422744%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="min-width:42px;text-align:right">0.7%</span></div></td>
+        </tr>`,
+        roiBars: `<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">TX</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:100.0%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">104.8x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">NV</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:13.722581046483148%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">14.4x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">AZ</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:9.90299688580401%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">10.4x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">CA</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:8.467791547474345%;height:100%;background:#3dba72;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#3dba72">8.9x</span>
+        </div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+            <span style="min-width:55px;font-weight:600;font-family:'Barlow Condensed',sans-serif">OTHER</span>
+            <div style="flex:1;background:#222;border-radius:4px;height:22px;overflow:hidden;position:relative">
+                <div style="width:4.864961404574586%;height:100%;background:#f0a500;border-radius:4px;transition:width 1s"></div>
+            </div>
+            <span style="min-width:50px;text-align:right;font-weight:600;font-family:'Barlow Condensed',sans-serif;color:#f0a500">5.1x</span>
+        </div>`,
+        sourceRoi: `<tr>
+            <td style="font-weight:500">Unknown<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$263,985</td>
+            <td>$10,153</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:48.43380556102302%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">48.4%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Google<br><span style="color:#888;font-size:12px">4.4x ROI</span></td>
+            <td>$19,571</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$86,829</td>
+            <td>$7,236</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:15.93069424207478%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">15.9%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Returning Client<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$60,537</td>
+            <td>$5,503</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:11.106847220772794%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">11.1%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Facebook<br><span style="color:#888;font-size:12px">2.3x ROI</span></td>
+            <td>$25,558</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$59,242</td>
+            <td>$7,405</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:10.869250921800253%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">10.9%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Referral<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$40,626</td>
+            <td>$10,156</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:7.453735322052886%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">7.5%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Youtube<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$18,318</td>
+            <td>$18,318</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:3.360932666199621%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">3.4%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Self Source<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$12,750</td>
+            <td>$12,750</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:2.3392685806176905%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">2.3%</span></div></td>
+        </tr><tr>
+            <td style="font-weight:500">Bing<br><span style="color:#888;font-size:12px"></span></td>
+            <td>—</td>
+            <td style="font-family:'Barlow Condensed',sans-serif;font-weight:600">$2,755</td>
+            <td>$2,755</td>
+            <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;background:#222;border-radius:3px;height:7px;overflow:hidden"><div style="width:0.5054654854589599%;height:100%;background:#e63518;border-radius:3px"></div></div><span style="font-size:12px">0.5%</span></div></td>
+        </tr>`,
+        sources: [{"name": "Unknown", "deals": 26, "revenue": 263984.66, "avg": 10153.256153846152, "share": 48.43380556102302}, {"name": "Google", "deals": 12, "revenue": 86829.0, "avg": 7235.75, "share": 15.93069424207478}, {"name": "Returning Client", "deals": 11, "revenue": 60537.0, "avg": 5503.363636363636, "share": 11.106847220772794}, {"name": "Facebook", "deals": 8, "revenue": 59242.0, "avg": 7405.25, "share": 10.869250921800253}, {"name": "Referral", "deals": 4, "revenue": 40626.0, "avg": 10156.5, "share": 7.453735322052886}, {"name": "Youtube", "deals": 1, "revenue": 18318.5, "avg": 18318.5, "share": 3.360932666199621}, {"name": "Self Source", "deals": 1, "revenue": 12750.0, "avg": 12750.0, "share": 2.3392685806176905}, {"name": "Bing", "deals": 1, "revenue": 2755.0, "avg": 2755.0, "share": 0.5054654854589599}],
+        states: [{"state": "NV", "leads": 135, "estimates": 47, "deals": 31, "revenue": 246849.5, "fb_spend": 11018.13, "ggl_spend": 6143.42, "total_spend": 17161.55, "roi": 14.383869755354267}, {"state": "AZ", "leads": 102, "estimates": 50, "deals": 9, "revenue": 55977.0, "fb_spend": 3201.55, "ggl_spend": 2191.11, "total_spend": 5392.66, "roi": 10.38022052196875}, {"state": "CA", "leads": 296, "estimates": 73, "deals": 11, "revenue": 86492.79, "fb_spend": 6914.13, "ggl_spend": 2830.6, "total_spend": 9744.73, "roi": 8.875852896899143}, {"state": "TX", "leads": 26, "estimates": 3, "deals": 5, "revenue": 94912.54, "fb_spend": 801.96, "ggl_spend": 103.53, "total_spend": 905.49, "roi": 104.81898198765309}, {"state": "OTHER", "leads": 227, "estimates": 31, "deals": 8, "revenue": 60810.33, "fb_spend": 3622.71, "ggl_spend": 8302.28, "total_spend": 11924.990000000002, "roi": 5.09940301836731}],
+    }
+};
+
+let currentPeriod = 'wk';
+let sourceChart = null;
+let currentSourceView = 'rev';
+
+function setPeriod(p, btn) {
+    currentPeriod = p;
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const d = DATA[p];
+    const t = d.totals;
+    
+    // Update sankey
+    drawSankey(d.sankey);
+    
+    // Update sankey stats
+    const le = t.leads, es = t.estimates, sa = t.sales;
+    document.getElementById('sk-leads').textContent = le;
+    document.getElementById('sk-est').textContent = es;
+    document.getElementById('sk-sales').textContent = sa;
+    document.getElementById('sk-rate1').textContent = (es/le*100).toFixed(1) + '%';
+    document.getElementById('sk-rate2').textContent = (sa/es*100).toFixed(1) + '%';
+    
+    // Update rep table
+    document.getElementById('rep-tbody').innerHTML = d.reps;
+    
+    // Update KPIs
+    document.getElementById('kpi-rev').textContent = '$' + t.revenue.toLocaleString('en-US', {maximumFractionDigits:0});
+    document.getElementById('kpi-leads').textContent = t.leads;
+    document.getElementById('kpi-est').textContent = t.estimates;
+    document.getElementById('kpi-sales').textContent = t.sales;
+    document.getElementById('kpi-spend').textContent = '$' + t.total_spend.toLocaleString('en-US', {maximumFractionDigits:0});
+    document.getElementById('kpi-roi').textContent = t.roi.toFixed(1) + 'x';
+    
+    const other = p === 'wk' ? 'mtd' : 'wk';
+    const ot = DATA[other].totals;
+    document.getElementById('kpi-rev-sub').textContent = (p === 'wk' ? 'MTD' : 'Weekly') + ': $' + ot.revenue.toLocaleString('en-US', {maximumFractionDigits:0});
+    document.getElementById('kpi-leads-sub').textContent = (p === 'wk' ? 'MTD' : 'Weekly') + ': ' + ot.leads;
+    document.getElementById('kpi-est-sub').textContent = 'Lead→Est: ' + (t.estimates/t.leads*100).toFixed(1) + '% · ' + (p === 'wk' ? 'MTD' : 'Wk') + ': ' + ot.estimates;
+    document.getElementById('kpi-sales-sub').textContent = 'Est→Close: ' + (t.sales/t.estimates*100).toFixed(1) + '% · Overall: ' + (t.sales/t.leads*100).toFixed(1) + '%';
+    document.getElementById('kpi-spend-sub').textContent = 'FB: $' + t.fb_spend.toLocaleString('en-US', {maximumFractionDigits:0}) + ' · Google: $' + t.ggl_spend.toLocaleString('en-US', {maximumFractionDigits:0});
+    document.getElementById('kpi-roi-sub').textContent = (p === 'wk' ? 'MTD' : 'Weekly') + ': ' + ot.roi.toFixed(1) + 'x';
+    
+    // Update ROI bars and source ROI
+    document.getElementById('roi-bars').innerHTML = d.roiBars;
+    document.getElementById('source-roi-tbody').innerHTML = d.sourceRoi;
+    
+    // Update source chart
+    showSourceView(currentSourceView);
+}
+
+function drawSankey(sk) {
+    const data = new google.visualization.DataTable();
+    data.addColumn('string', 'From');
+    data.addColumn('string', 'To');
+    data.addColumn('number', 'Weight');
+    data.addRows([
+        ['Total Leads (' + sk.leads + ')', 'Estimated (' + sk.estimated + ')', sk.estimated],
+        ['Total Leads (' + sk.leads + ')', 'Not Estimated (' + sk.not_estimated + ')', sk.not_estimated],
+        ['Estimated (' + sk.estimated + ')', 'Closed Sales (' + sk.closed + ')', sk.closed],
+        ['Estimated (' + sk.estimated + ')', 'Not Closed (' + sk.not_closed + ')', sk.not_closed],
+    ]);
+    const opts = {
+        sankey: {
+            node: {
+                colors: ['#4a9fd4', '#f0a500', '#555', '#3dba72', '#444'],
+                label: { fontName: 'Barlow Condensed', fontSize: 14, color: '#f0f0f0' },
+                nodePadding: 30,
+            },
+            link: { colorMode: 'gradient', color: { fill: '#333' } }
+        },
+        backgroundColor: 'transparent',
+        tooltip: { textStyle: { color: '#f0f0f0' }, showColorCode: true }
+    };
+    new google.visualization.Sankey(document.getElementById('sankey-chart')).draw(data, opts);
+}
+
+function showSourceView(view, btn) {
+    currentSourceView = view;
+    if (btn) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+    
+    const sources = DATA[currentPeriod].sources;
+    const labels = sources.map(s => s.name);
+    let values, label, color;
+    
+    if (view === 'rev') {
+        values = sources.map(s => s.revenue);
+        label = 'Revenue ($)';
+        color = '#e63518';
+    } else if (view === 'leads') {
+        // Use state data for leads by source — not available per source, show deals as proxy
+        values = sources.map(s => s.deals);
+        label = 'Deals';
+        color = '#4a9fd4';
+    } else {
+        values = sources.map(s => s.deals);
+        label = 'Deals';
+        color = '#3dba72';
+    }
+    
+    if (sourceChart) sourceChart.destroy();
+    const ctx = document.getElementById('source-chart').getContext('2d');
+    sourceChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{ label: label, data: values, backgroundColor: color + '99', borderColor: color, borderWidth: 1 }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            return view === 'rev' ? '$' + ctx.raw.toLocaleString() : ctx.raw;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: '#2e2e2e' },
+                    ticks: { color: '#888', font: { family: 'Barlow Condensed' },
+                        callback: function(v) { return view === 'rev' ? '$' + (v/1000).toFixed(0) + 'K' : v; }
+                    }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { color: '#ccc', font: { family: 'Barlow Condensed', size: 13 } }
+                }
+            }
+        }
+    });
+}
+
+function downloadCSV() {
+    const csv = `BOSS SECURITY SCREENS - Weekly Report Data\nReport Period: March 16-22 2026 (Weekly) + March 1-24 2026 (MTD)\n\n=== WEEKLY SUMMARY BY STATE ===\nState,Leads,Estimates,Sales,Revenue,Google Spend,Facebook Spend,Total Spend,ROI\nNV,54,13,12,70376.00,1849.40,4022.22,5871.62,12.0x\nAZ,26,21,2,30930.00,644.21,804.32,1448.53,21.4x\nCA,82,18,2,19860.00,1353.49,1091.60,2445.09,8.1x\nTX,11,0,0,0.00,33.88,307.32,341.20,0.0x\nOTHER,78,2,4,30692.83,2170.28,1068.21,3238.49,9.5x\nTOTAL,251,54,20,151858.83,6051.26,7293.67,13344.93,11.4x\n\n=== MTD SUMMARY BY STATE ===\nState,Leads,Estimates,Sales,Revenue,Google Spend,Facebook Spend,Total Spend,ROI\nNV,135,47,31,246849.50,6143.42,11018.13,17161.55,14.4x\nAZ,102,50,9,55977.00,2191.11,3201.55,5392.66,10.4x\nCA,296,73,11,86492.79,2830.60,6914.13,9744.73,8.9x\nTX,26,3,5,94912.54,103.53,801.96,905.49,104.8x\nOTHER,227,31,8,60810.33,8302.28,3622.71,11924.99,5.1x\nTOTAL,786,204,64,545042.16,19570.94,25558.48,45129.42,12.1x\n\n=== WEEKLY SALES BY REP ===\nRank,Rep,Deals,Revenue,Avg Deal,Revenue Share\n1,Adam Rogers,4,72133.00,18033.25,47.5%\n2,Sindy Thonhoff,3,30527.00,10175.67,20.1%\n3,Nick Stramaglio,4,24820.00,6205.00,16.3%\n4,Deana Buckley,5,15029.00,3005.80,9.9%\n5,J Kerr,4,9349.83,2337.46,6.2%\n\n=== MTD SALES BY REP ===\nRank,Rep,Deals,Revenue,Avg Deal,Revenue Share\n1,Sindy Thonhoff,11,131710.50,11973.68,24.2%\n2,Adam Rogers,13,108225.00,8325.00,19.9%\n3,Nick Stramaglio,11,91270.00,8297.27,16.7%\n4,J Kerr,12,90045.51,7503.79,16.5%\n5,David Mauney,4,58600.15,14650.04,10.8%\n6,Deana Buckley,9,27230.00,3025.56,5.0%\n7,Allan Ellison,1,17250.00,17250.00,3.2%\n8,Robert Jones,1,9454.00,9454.00,1.7%\n9,Mike Newman,1,7187.00,7187.00,1.3%\n10,Elena Ledoux,1,4070.00,4070.00,0.7%\n\n=== MTD LEAD SOURCE ROI ===\nSource,Deals,Revenue,Avg Deal,Revenue Share\nUnknown,26,263984.66,10153.26,48.4%\nGoogle,12,86829.00,7235.75,15.9%\nReturning Client,11,60537.00,5503.36,11.1%\nFacebook,8,59242.00,7405.25,10.9%\nReferral,4,40626.00,10156.50,7.5%\nYoutube,1,18318.50,18318.50,3.4%\nSelf Source,1,12750.00,12750.00,2.3%\nBing,1,2755.00,2755.00,0.5%`;
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'boss_data_03-16_03-22.csv';
+    a.click();
+}
+
+// Init
+google.charts.load('current', {'packages': ['sankey']});
+google.charts.setOnLoadCallback(function() {
+    drawSankey(DATA.wk.sankey);
+    showSourceView('rev');
+});
+</script>
+</body>
+</html>
