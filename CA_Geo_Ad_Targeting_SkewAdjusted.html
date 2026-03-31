@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CA Geographic Ad Targeting (Skew-Adjusted) — Boss Security Screens</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple:    #534AB7;
+    --purple-l:  #EEEDFE;
+    --purple-t:  #534AB722;
+    --blue:      #378ADD;
+    --blue-l:    #E6F1FB;
+    --teal:      #1D9E75;
+    --teal-l:    #E1F5EE;
+    --amber:     #BA7517;
+    --amber-l:   #FAEEDA;
+    --coral:     #D85A30;
+    --red:       #E24B4A;
+    --red-l:     #FCEBEB;
+    --gray-50:   #F5F4F0;
+    --gray-100:  #EDECE8;
+    --gray-200:  #D3D1C7;
+    --gray-400:  #888780;
+    --gray-700:  #444441;
+    --gray-900:  #1A1917;
+    --border:    #DDD9D0;
+    --radius:    6px;
+    --radius-lg: 10px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F0EFE9;
+    color: var(--gray-900);
+    font-size: 13px;
+    line-height: 1.55;
+    padding: 0 0 60px;
+  }
+
+  /* ── Header ── */
+  .report-header {
+    background: var(--gray-900);
+    color: white;
+    padding: 36px 48px 28px;
+    border-bottom: 3px solid var(--teal);
+  }
+  .report-header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+  }
+  .report-header p { font-size: 12px; color: #888780; }
+  .report-header .badges { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .badge {
+    font-size: 10px; font-weight: 600; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .badge-purple { background: var(--purple); color: white; }
+  .badge-blue   { background: var(--blue);   color: white; }
+  .badge-teal   { background: var(--teal);   color: white; }
+  .badge-amber  { background: var(--amber);  color: white; }
+  .badge-red    { background: var(--red);    color: white; }
+  .badge-outline{ background: transparent; color: #888780; border: 1px solid #444441; }
+
+  /* ── Skew banner ── */
+  .skew-banner {
+    background: #FFF8EC;
+    border-bottom: 1px solid #F0D080;
+    padding: 10px 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: #7A4F00;
+  }
+  .skew-banner strong { font-weight: 600; }
+  .skew-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amber); flex-shrink: 0;
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+  .section { margin-top: 36px; }
+  .section-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--gray-400);
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── KPI Cards ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .kpi-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px 18px;
+    border-top: 3px solid var(--gray-200);
+  }
+  .kpi-card.accent-purple { border-top-color: var(--purple); }
+  .kpi-card.accent-teal   { border-top-color: var(--teal); }
+  .kpi-card.accent-blue   { border-top-color: var(--blue); }
+  .kpi-card.accent-amber  { border-top-color: var(--amber); }
+  .kpi-card.accent-red    { border-top-color: var(--red); }
+  .kpi-label { font-size: 10px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .kpi-value { font-size: 24px; font-weight: 600; color: var(--gray-900); line-height: 1.1; margin-bottom: 4px; }
+  .kpi-sub   { font-size: 10.5px; color: var(--gray-400); }
+  .kpi-delta { font-size: 10.5px; margin-top: 6px; }
+  .kpi-delta.down { color: var(--red); }
+  .kpi-delta.up   { color: var(--teal); }
+  .kpi-delta.neutral { color: var(--gray-400); }
+
+  /* ── Tables ── */
+  .table-wrap {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: var(--gray-50); text-align: left;
+    padding: 9px 12px; font-size: 10px; font-weight: 600;
+    color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  thead th.r { text-align: right; }
+  thead th.c { text-align: center; }
+  tbody tr { border-bottom: 1px solid var(--gray-100); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--gray-50); }
+  tbody td { padding: 8px 12px; font-size: 12px; vertical-align: middle; }
+  tbody td.r { text-align: right; }
+  tbody td.c { text-align: center; }
+  tbody td.bold { font-weight: 600; }
+  tbody td.muted { color: var(--gray-400); }
+  .mono { font-family: 'DM Mono', monospace; font-size: 11.5px; font-weight: 500; }
+  .skew-row { background: #FFF9F0 !important; }
+  .skew-row:hover { background: #FFF5E6 !important; }
+
+  /* ── Pills ── */
+  .pill {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 20px; white-space: nowrap;
+  }
+  .p-done   { background: var(--teal-l);   color: #085041; }
+  .p-sold   { background: var(--purple-l); color: #3C3489; }
+  .p-fm     { background: var(--amber-l);  color: #633806; }
+  .p-inst   { background: var(--gray-100); color: var(--gray-700); }
+  .p-hot    { background: var(--teal-l);   color: #085041; }
+  .p-warm   { background: var(--blue-l);   color: #0C447C; }
+  .p-new    { background: var(--purple-l); color: #3C3489; }
+  .p-watch  { background: var(--amber-l);  color: #633806; }
+  .p-cold   { background: var(--gray-100); color: var(--gray-700); }
+  .p-pause  { background: var(--red-l);    color: #791F1F; }
+  .p-high   { background: var(--teal-l);   color: #085041; }
+  .p-med    { background: var(--amber-l);  color: #633806; }
+  .p-low    { background: var(--red-l);    color: #791F1F; }
+  .p-la     { background: var(--purple-l); color: var(--purple); }
+  .p-sac    { background: var(--blue-l);   color: var(--blue); }
+  .p-bay    { background: var(--teal-l);   color: var(--teal); }
+  .p-socal  { background: var(--amber-l);  color: var(--amber); }
+  .p-skew   { background: #FFF3CD; color: #856404; border: 1px solid #FFDA6A; }
+  .p-clean  { background: var(--teal-l);   color: #085041; border: 1px solid var(--teal); }
+
+  /* ── Score bar ── */
+  .score-wrap { display: flex; align-items: center; gap: 6px; }
+  .score-bar-bg { width: 40px; height: 5px; background: var(--gray-100); border-radius: 3px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 3px; }
+  .score-num { font-size: 11px; font-weight: 600; min-width: 22px; }
+
+  /* ── Skew badge inline ── */
+  .skew-inline {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 9px; font-weight: 600; padding: 1px 5px;
+    background: #FFF3CD; color: #856404;
+    border-radius: 10px; border: 1px solid #FFDA6A;
+    vertical-align: middle; margin-left: 4px;
+  }
+
+  /* ── Region → City hierarchy ── */
+  .region-block { margin-bottom: 10px; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .region-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-left: 4px solid var(--gray-200);
+  }
+  .region-hdr.la-hdr    { background: #F3F2FE; border-left-color: var(--purple); }
+  .region-hdr.sac-hdr   { background: #EFF6FD; border-left-color: var(--blue); }
+  .region-hdr.bay-hdr   { background: #EEF9F4; border-left-color: var(--teal); }
+  .region-hdr.socal-hdr { background: #FDF6EC; border-left-color: var(--amber); }
+  .region-name { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+  .region-meta { display: flex; gap: 20px; font-size: 11px; color: var(--gray-400); }
+  .region-meta span { display: flex; align-items: center; gap: 4px; }
+  .region-meta strong { color: var(--gray-700); }
+  .region-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 6px; flex-shrink: 0; }
+  .nbhd { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 12px; margin: 1px 2px 1px 0; background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--border); }
+
+  /* ── Rec cards ── */
+  .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .rec-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .rec-card-hdr { padding: 12px 14px 8px; border-bottom: 1px solid var(--gray-100); }
+  .rec-card-hdr h3 { font-size: 12px; font-weight: 600; color: var(--gray-900); margin-top: 6px; }
+  .rec-item { padding: 10px 14px; border-bottom: 1px solid var(--gray-100); }
+  .rec-item:last-child { border-bottom: none; }
+  .rec-zip-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 3px; }
+  .rec-zip { font-family: 'DM Mono', monospace; font-size: 11.5px; font-weight: 500; }
+  .rec-city { font-size: 12px; font-weight: 600; color: var(--gray-900); margin-bottom: 3px; }
+  .rec-why { font-size: 11px; color: var(--gray-400); line-height: 1.5; }
+
+  /* ── Priority ranking ── */
+  .priority-list { display: flex; flex-direction: column; gap: 8px; }
+  .priority-item {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); display: flex;
+    align-items: center; padding: 14px 18px; gap: 16px;
+  }
+  .priority-item.p1 { border-left: 4px solid var(--teal); }
+  .priority-item.p2 { border-left: 4px solid var(--purple); }
+  .priority-item.p3 { border-left: 4px solid var(--blue); }
+  .priority-item.p4 { border-left: 4px solid var(--amber); }
+  .priority-rank {
+    font-family: 'Instrument Serif', serif;
+    font-size: 36px; font-weight: 400;
+    min-width: 36px; line-height: 1;
+  }
+  .p1 .priority-rank { color: var(--teal); }
+  .p2 .priority-rank { color: var(--purple); }
+  .p3 .priority-rank { color: var(--blue); }
+  .p4 .priority-rank { color: var(--amber); }
+  .priority-body { flex: 1; }
+  .priority-metro { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .priority-why { font-size: 11.5px; color: var(--gray-400); line-height: 1.5; }
+  .priority-right { text-align: right; min-width: 130px; }
+  .priority-conf {
+    font-size: 9.5px; font-weight: 600; padding: 4px 10px;
+    border-radius: 20px; display: inline-block; text-align: center;
+  }
+  .conf-high   { background: var(--teal-l);   color: #085041; }
+  .conf-medium { background: var(--amber-l);  color: #633806; }
+  .conf-low    { background: var(--red-l);    color: #791F1F; }
+  .priority-adj { font-size: 10.5px; color: var(--gray-400); margin-top: 5px; }
+
+  /* ── Adj revenue block ── */
+  .adj-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+  .adj-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px 18px;
+  }
+  .adj-card.flagged { background: #FFF9F0; border-color: #F0D080; }
+  .adj-card.clean   { background: #F2FCF7; border-color: var(--teal); }
+  .adj-metro-label { font-size: 10px; font-weight: 600; letter-spacing:.06em; text-transform:uppercase; color: var(--gray-400); margin-bottom: 8px; }
+  .adj-nums { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+  .adj-before { font-size: 18px; font-weight: 600; color: var(--gray-400); text-decoration: line-through; }
+  .adj-arrow  { font-size: 14px; color: var(--gray-400); }
+  .adj-after  { font-size: 22px; font-weight: 600; }
+  .adj-card.flagged .adj-after { color: var(--amber); }
+  .adj-card.clean   .adj-after { color: var(--teal); }
+  .adj-note { font-size: 11px; color: var(--gray-400); font-style: italic; line-height: 1.5; }
+  .adj-pct-bar { height: 5px; background: var(--gray-100); border-radius: 3px; overflow: hidden; margin-top: 10px; }
+  .adj-pct-fill { height: 100%; border-radius: 3px; }
+
+  /* ── Info / warning boxes ── */
+  .info-box {
+    background: var(--blue-l); border: 1px solid #B5D4F4;
+    border-radius: var(--radius); padding: 12px 14px; margin-top: 14px;
+  }
+  .info-box p { font-size: 11px; color: #185FA5; line-height: 1.6; }
+  .info-box strong { color: #0C447C; display: block; margin-bottom: 3px; font-size: 11px; }
+  .warn-box {
+    background: var(--amber-l); border: 1px solid #E59866;
+    border-radius: var(--radius); padding: 12px 14px; margin-top: 14px;
+  }
+  .warn-box p { font-size: 11px; color: #7A4F00; line-height: 1.6; }
+  .warn-box strong { color: #5C3900; display: block; margin-bottom: 3px; font-size: 11px; }
+
+  @media (max-width: 760px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .rec-grid  { grid-template-columns: 1fr; }
+    .adj-grid  { grid-template-columns: 1fr; }
+    .container { padding: 0 16px; }
+    .report-header, .skew-banner { padding-left: 20px; padding-right: 20px; }
+    .priority-item { flex-wrap: wrap; }
+    .priority-right { min-width: auto; text-align: left; }
+  }
+  @media print {
+    body { background: white; }
+    .report-header, .skew-banner { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="report-header">
+  <div style="max-width:1080px;margin:0 auto">
+    <div style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#888780;margin-bottom:8px">Boss Security Screens · California Market Intelligence · March 2026</div>
+    <h1>California Geographic Ad Targeting</h1>
+    <p>Skew-adjusted · Rep position hypothesis applied · Monday.com + Facebook Windsor.ai</p>
+    <div class="badges">
+      <span class="badge badge-teal">#1 Bay Area — Priority Upgraded</span>
+      <span class="badge badge-purple">#2 LA metro — Confirmed</span>
+      <span class="badge badge-blue">#3 Sacramento — Downgraded</span>
+      <span class="badge badge-amber">#4 So Cal — Exploratory Only</span>
+      <span class="badge badge-red">Skew Correction Applied</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SKEW BANNER ═══ -->
+<div class="skew-banner">
+  <div class="skew-dot"></div>
+  <div>
+    <strong>Rep position skew detected and corrected.</strong>
+    Sindy Thonhoff (VP Sales) drives 69% of Sacramento deals, with 4 of 9 from personal network (Referral / Returning / blank). Yorba Linda = 1 repeat client ($42.7K). All recommendations and scores below are adjusted for these effects. <a href="#skew-detail" style="color:#5C3900;font-weight:600;text-decoration:none">See full analysis ↓</a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ═══ KPIs ═══ -->
+<div class="section">
+  <div class="section-label">Skew-adjusted summary metrics</div>
+  <div class="kpi-grid">
+    <div class="kpi-card accent-teal">
+      <div class="kpi-label">Bay Area — adj. revenue</div>
+      <div class="kpi-value">$68,707</div>
+      <div class="kpi-sub">100% ad-driven · 74× ROAS · $925 spend</div>
+      <div class="kpi-delta up">↑ Priority #1 (was #3)</div>
+    </div>
+    <div class="kpi-card accent-purple">
+      <div class="kpi-label">LA metro — adj. revenue</div>
+      <div class="kpi-value">$191,826</div>
+      <div class="kpi-sub">96% ad-driven · −$8.5K network deals</div>
+      <div class="kpi-delta neutral">→ Priority #2 (unchanged)</div>
+    </div>
+    <div class="kpi-card accent-blue">
+      <div class="kpi-label">Sacramento — adj. revenue</div>
+      <div class="kpi-value">$125,764</div>
+      <div class="kpi-sub">Was $167,997 · −$42.2K rep-network removed</div>
+      <div class="kpi-delta down">↓ Priority #3 (was #2) · −25%</div>
+    </div>
+    <div class="kpi-card accent-amber">
+      <div class="kpi-label">So Cal — adj. revenue</div>
+      <div class="kpi-value">$21,782</div>
+      <div class="kpi-sub">Was $64,454 · −$42.7K Yolanda Gellis</div>
+      <div class="kpi-delta down">↓ Priority #4 (was #3) · −66%</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REVISED PRIORITY RANKING ═══ -->
+<div class="section">
+  <div class="section-label">Revised ad targeting priority — after rep-skew correction</div>
+  <div class="priority-list">
+    <div class="priority-item p1">
+      <div class="priority-rank">1</div>
+      <div class="priority-body">
+        <div class="priority-metro" style="color:var(--teal)">Bay Area</div>
+        <div class="priority-why">Purest signal in the dataset — 100% ad-driven, zero rep proximity effect, 74× ROAS on just $925 in spend. Sunnyvale (94086) and Redwood City (94061) closed organically with NO Facebook ads ever running there. Every dollar spent here produces verifiable, non-network-inflated returns. Launch immediately with Google LSA + Facebook retargeting.</div>
+      </div>
+      <div class="priority-right">
+        <span class="priority-conf conf-high">Confidence: HIGH</span>
+        <div class="priority-adj">No skew detected · 100% clean</div>
+      </div>
+    </div>
+    <div class="priority-item p2">
+      <div class="priority-rank">2</div>
+      <div class="priority-body">
+        <div class="priority-metro" style="color:var(--purple)">LA metro</div>
+        <div class="priority-why">96% ad-driven. J Kerr and David Mauney close LA deals remotely from Nevada — no rep has a physical LA base. 13 of 14 LA deals came from Google, Facebook, or Instagram. Adjusted from $200K to $191.8K (−4%). LA is a genuine high-volume market. Scale existing TofF-LA and expand into adjacent untapped zips.</div>
+      </div>
+      <div class="priority-right">
+        <span class="priority-conf conf-high">Confidence: HIGH</span>
+        <div class="priority-adj">Minimal skew · −4% adj.</div>
+      </div>
+    </div>
+    <div class="priority-item p3">
+      <div class="priority-rank">3</div>
+      <div class="priority-body">
+        <div class="priority-metro" style="color:var(--blue)">Sacramento metro</div>
+        <div class="priority-why">Real market with genuine ad demand — but calibrate expectations. Sindy's network accounts for ~25% of revenue, which paid ads cannot replicate. Adjusted from $168K to $126K. Cali_Sacramento LaL campaign is effective; keep running but do not scale budget assuming full $168K is addressable. Google-sourced deals (Sovan Keat, Andrea Trishell, Shirley Strout) are the reliable signal.</div>
+      </div>
+      <div class="priority-right">
+        <span class="priority-conf conf-medium">Confidence: MEDIUM</span>
+        <div class="priority-adj">Rep skew confirmed · −25% adj.</div>
+      </div>
+    </div>
+    <div class="priority-item p4">
+      <div class="priority-rank">4</div>
+      <div class="priority-body">
+        <div class="priority-metro" style="color:var(--amber)">So Cal (non-LA)</div>
+        <div class="priority-why">Was ranked 3rd — drops to 4th after removing Yolanda Gellis (1 client, 2 orders = $42.7K). True ad-addressable market is only $21.8K across 3 deals. Chula Vista (91910) via Adam Rogers is a real signal. Treat as exploratory — allocate $500–1K test budget before any meaningful spend. Do NOT use Yorba Linda as proof of market demand.</div>
+      </div>
+      <div class="priority-right">
+        <span class="priority-conf conf-low">Confidence: LOW</span>
+        <div class="priority-adj">1-client concentration · −66% adj.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADJ REVENUE ═══ -->
+<div class="section">
+  <div class="section-label">Adjusted revenue — ad-driven demand vs. rep-network (non-replicable)</div>
+  <div class="adj-grid">
+    <div class="adj-card clean">
+      <div class="adj-metro-label" style="color:var(--teal)">Bay Area · #1 priority</div>
+      <div class="adj-nums">
+        <span class="adj-before">$68,707</span>
+        <span class="adj-arrow">→</span>
+        <span class="adj-after">$68,707</span>
+      </div>
+      <div class="adj-note">$0 removed — every single deal is ad-driven (Google + Instagram). No rep proximity. ROAS 74×.</div>
+      <div class="adj-pct-bar"><div class="adj-pct-fill" style="width:100%;background:var(--teal)"></div></div>
+      <div style="font-size:10px;color:var(--teal);margin-top:4px;font-weight:600">100% clean market signal</div>
+    </div>
+    <div class="adj-card clean">
+      <div class="adj-metro-label" style="color:var(--purple)">LA metro · #2 priority</div>
+      <div class="adj-nums">
+        <span class="adj-before">$200,326</span>
+        <span class="adj-arrow">→</span>
+        <span class="adj-after" style="color:var(--purple)">$191,826</span>
+      </div>
+      <div class="adj-note">−$8,500 (Geoff Moss · Vehicles/rep network). 96% of reported revenue is genuine ad-driven demand.</div>
+      <div class="adj-pct-bar"><div class="adj-pct-fill" style="width:96%;background:var(--purple)"></div></div>
+      <div style="font-size:10px;color:var(--purple);margin-top:4px;font-weight:600">96% clean — scale with confidence</div>
+    </div>
+    <div class="adj-card flagged">
+      <div class="adj-metro-label" style="color:var(--blue)">Sacramento · #3 priority</div>
+      <div class="adj-nums">
+        <span class="adj-before">$167,997</span>
+        <span class="adj-arrow">→</span>
+        <span class="adj-after">$125,764</span>
+      </div>
+      <div class="adj-note">−$42,233 removed: Referral, Returning Client, and blank-source deals via Sindy's personal network. ~25% was rep-inflated.</div>
+      <div class="adj-pct-bar"><div class="adj-pct-fill" style="width:75%;background:var(--blue)"></div></div>
+      <div style="font-size:10px;color:var(--amber);margin-top:4px;font-weight:600">75% clean — continue, but calibrate ROI expectations</div>
+    </div>
+    <div class="adj-card flagged">
+      <div class="adj-metro-label" style="color:var(--amber)">So Cal · #4 priority</div>
+      <div class="adj-nums">
+        <span class="adj-before">$64,454</span>
+        <span class="adj-arrow">→</span>
+        <span class="adj-after">$21,782</span>
+      </div>
+      <div class="adj-note">−$42,672 removed: Yolanda Gellis ×2 orders (1 repeat client relationship, not market demand). Only 34% is addressable by ads.</div>
+      <div class="adj-pct-bar"><div class="adj-pct-fill" style="width:34%;background:var(--amber)"></div></div>
+      <div style="font-size:10px;color:var(--red);margin-top:4px;font-weight:600">34% clean — exploratory only, validate before scaling</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AD SPEND vs REVENUE ═══ -->
+<div class="section">
+  <div class="section-label">Ad spend vs. adjusted closed revenue by region</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Region</th>
+          <th class="r">Reported rev.</th>
+          <th class="r">Adj. revenue</th>
+          <th class="r">FB ad spend</th>
+          <th class="r">Adj. ROAS</th>
+          <th class="r">Deals</th>
+          <th class="r">Revenue share</th>
+          <th class="c">Signal quality</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="region-dot" style="background:var(--teal)"></span><strong>Bay Area</strong></td>
+          <td class="r muted">$68,707</td>
+          <td class="r bold" style="color:var(--teal)">$68,707</td>
+          <td class="r">$925</td>
+          <td class="r"><span style="color:var(--teal);font-weight:700;font-size:15px">74.3×</span></td>
+          <td class="r">7</td>
+          <td class="r">
+            <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">
+              <div style="width:70px;height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden"><div style="width:100%;height:100%;background:var(--teal);border-radius:3px"></div></div>
+              <span>100%</span>
+            </div>
+          </td>
+          <td class="c"><span class="pill p-clean">Pure signal</span></td>
+        </tr>
+        <tr>
+          <td><span class="region-dot" style="background:var(--purple)"></span><strong>LA metro</strong></td>
+          <td class="r muted">$200,326</td>
+          <td class="r bold" style="color:var(--purple)">$191,826</td>
+          <td class="r">$39,209</td>
+          <td class="r"><span style="color:var(--amber);font-weight:600">4.9×</span></td>
+          <td class="r">16</td>
+          <td class="r">
+            <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">
+              <div style="width:70px;height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden"><div style="width:96%;height:100%;background:var(--purple);border-radius:3px"></div></div>
+              <span>96%</span>
+            </div>
+          </td>
+          <td class="c"><span class="pill p-clean">Clean</span></td>
+        </tr>
+        <tr class="skew-row">
+          <td><span class="region-dot" style="background:var(--blue)"></span><strong>Sacramento</strong> <span class="skew-inline">⚠ skew</span></td>
+          <td class="r muted">$167,997</td>
+          <td class="r bold" style="color:var(--blue)">$125,764</td>
+          <td class="r">$20,368</td>
+          <td class="r"><span style="color:var(--amber);font-weight:600">6.2×</span></td>
+          <td class="r">13</td>
+          <td class="r">
+            <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">
+              <div style="width:70px;height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden"><div style="width:75%;height:100%;background:var(--blue);border-radius:3px"></div></div>
+              <span>75%</span>
+            </div>
+          </td>
+          <td class="c"><span class="pill p-skew">Partial skew</span></td>
+        </tr>
+        <tr class="skew-row">
+          <td><span class="region-dot" style="background:var(--amber)"></span><strong>So Cal</strong> <span class="skew-inline">⚠ skew</span></td>
+          <td class="r muted">$64,454</td>
+          <td class="r bold" style="color:var(--amber)">$21,782</td>
+          <td class="r">$2,650</td>
+          <td class="r"><span style="color:var(--amber);font-weight:600">8.2×</span></td>
+          <td class="r">5</td>
+          <td class="r">
+            <div style="display:flex;align-items:center;gap:6px;justify-content:flex-end">
+              <div style="width:70px;height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden"><div style="width:34%;height:100%;background:var(--amber);border-radius:3px"></div></div>
+              <span>34%</span>
+            </div>
+          </td>
+          <td class="c"><span class="pill p-skew">High skew</span></td>
+        </tr>
+        <tr style="background:var(--gray-50)">
+          <td><strong>Total California</strong></td>
+          <td class="r muted">$501,484</td>
+          <td class="r bold">$408,079</td>
+          <td class="r bold">$63,152</td>
+          <td class="r bold">6.5×</td>
+          <td class="r bold">41</td>
+          <td class="r">—</td>
+          <td class="c">—</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="warn-box" style="margin:0;border-radius:0;border:none;border-top:1px solid var(--border)">
+      <strong>Skew correction note</strong>
+      <p>Adjusted ROAS figures remove rep-network revenue before calculating returns. Sacramento's adjusted ROAS is 6.2× (not 8.2× as previously reported). So Cal's adjusted ROAS is 8.2× — but that denominator is only 3 deals; treat as statistically unreliable until more non-Gellis clients close there.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HIERARCHY ═══ -->
+<div class="section">
+  <div class="section-label">Region → City → Neighborhood hierarchy (signal quality noted)</div>
+
+  <!-- BAY AREA — moved to top as #1 priority -->
+  <div class="region-block">
+    <div class="region-hdr bay-hdr">
+      <div class="region-name">
+        <span class="region-dot" style="background:var(--teal)"></span>Bay Area
+        <span style="margin-left:8px;font-size:10px;font-weight:600;background:var(--teal-l);color:#085041;padding:2px 8px;border-radius:20px">Priority #1 · Upgraded</span>
+      </div>
+      <div class="region-meta">
+        <span>7 deals</span><span><strong>$68,707</strong></span>
+        <span>FB spend: <strong>$925</strong></span>
+        <span>Signal quality: <strong style="color:var(--teal)">100% clean</strong></span>
+      </div>
+    </div>
+    <table>
+      <thead><tr>
+        <th style="width:18%">City</th><th style="width:8%">Zip</th><th>Neighborhoods</th>
+        <th class="r" style="width:11%">Revenue</th><th class="c" style="width:7%">Deals</th>
+        <th class="c" style="width:9%">Stage</th><th class="c" style="width:10%">Signal</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="bold">Sunnyvale</td><td><span class="mono" style="color:var(--teal)">94086</span></td><td><span class="nbhd">Murphy/Castro area</span><span class="nbhd">Downtown Sunnyvale</span></td><td class="r bold">$18,988</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Organic</span></td></tr>
+        <tr><td class="bold">Redwood City</td><td><span class="mono" style="color:var(--teal)">94061</span></td><td><span class="nbhd">Farm Hill</span><span class="nbhd">Edgewood adj.</span></td><td class="r bold">$15,974</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Organic</span></td></tr>
+        <tr><td class="bold">Mark Frazer · Sunnyvale</td><td><span class="mono" style="color:var(--teal)">94086</span></td><td><span class="nbhd">N Bayview Ave</span></td><td class="r bold">$18,988</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Castro Valley</td><td><span class="mono" style="color:var(--teal)">94546</span></td><td><span class="nbhd">Five Canyons</span><span class="nbhd">Lake Chabot adj.</span></td><td class="r bold">$10,815</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Instagram</span></td></tr>
+        <tr><td class="bold">Oakland</td><td><span class="mono" style="color:var(--teal)">94607</span></td><td><span class="nbhd">West Oakland</span><span class="nbhd">Prescott</span></td><td class="r bold">$13,054</td><td class="c">3</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-watch">Monitor</span></td></tr>
+        <tr><td class="bold">San Jose</td><td><span class="mono" style="color:var(--teal)">95128</span></td><td><span class="nbhd">Santa Clara adj.</span><span class="nbhd">Burbank</span></td><td class="r bold">$8,052</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Hayward</td><td><span class="mono" style="color:var(--teal)">94542</span></td><td><span class="nbhd">Mt Eden</span><span class="nbhd">South Hayward</span></td><td class="r bold">$1,825</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LA -->
+  <div class="region-block">
+    <div class="region-hdr la-hdr">
+      <div class="region-name">
+        <span class="region-dot" style="background:var(--purple)"></span>LA metro
+        <span style="margin-left:8px;font-size:10px;font-weight:600;background:var(--purple-l);color:var(--purple);padding:2px 8px;border-radius:20px">Priority #2 · Confirmed</span>
+      </div>
+      <div class="region-meta">
+        <span>16 deals</span><span><strong>$191,826</strong> adj.</span>
+        <span>FB spend: <strong>$39.2K</strong></span>
+        <span>Signal quality: <strong style="color:var(--purple)">96% clean</strong></span>
+      </div>
+    </div>
+    <table>
+      <thead><tr>
+        <th style="width:18%">City</th><th style="width:8%">Zip</th><th>Neighborhoods</th>
+        <th class="r" style="width:11%">Revenue</th><th class="c" style="width:7%">Deals</th>
+        <th class="c" style="width:9%">Stage</th><th class="c" style="width:10%">Signal</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="bold">Chatsworth</td><td><span class="mono" style="color:var(--purple)">91311</span></td><td><span class="nbhd">West Hills adj.</span><span class="nbhd">Northridge border</span></td><td class="r bold">$57,870</td><td class="c">2</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Playa del Rey</td><td><span class="mono" style="color:var(--purple)">90293</span></td><td><span class="nbhd">Westside beaches</span></td><td class="r bold">$20,292</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Koreatown / LA</td><td><span class="mono" style="color:var(--purple)">90004</span></td><td><span class="nbhd">Harvard Heights</span></td><td class="r bold">$20,000</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">San Pedro / LA</td><td><span class="mono" style="color:var(--purple)">90731</span></td><td><span class="nbhd">Gaffey St.</span></td><td class="r bold">$19,637</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Santa Clarita</td><td><span class="mono" style="color:var(--purple)">91350</span></td><td><span class="nbhd">Valencia</span><span class="nbhd">Saugus</span></td><td class="r bold">$18,530</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Beverlywood</td><td><span class="mono" style="color:var(--purple)">90035</span></td><td><span class="nbhd">Pico-Robertson</span></td><td class="r bold">$15,737</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Referral</span></td></tr>
+        <tr><td class="bold">Fairfax / LA</td><td><span class="mono" style="color:var(--purple)">90036</span></td><td><span class="nbhd">Miracle Mile</span></td><td class="r bold">$15,246</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Downey</td><td><span class="mono" style="color:var(--purple)">90241</span></td><td><span class="nbhd">Brookshire</span></td><td class="r bold">$10,193</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Facebook</span></td></tr>
+        <tr><td class="bold">Westwood</td><td><span class="mono" style="color:var(--purple)">90024</span></td><td><span class="nbhd">UCLA area</span></td><td class="r bold">$8,500</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-skew">Vehicles</span></td></tr>
+        <tr><td class="bold">West Adams</td><td><span class="mono" style="color:var(--purple)">90018</span></td><td><span class="nbhd">Jefferson Park</span></td><td class="r bold">$3,300</td><td class="c">2</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Mid-City / Others</td><td><span class="mono" style="color:var(--purple)">Various</span></td><td><span class="nbhd">90019 · 90045 · 90660 · 91103</span></td><td class="r bold">$11,065</td><td class="c">4</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Digital</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SACRAMENTO -->
+  <div class="region-block">
+    <div class="region-hdr sac-hdr">
+      <div class="region-name">
+        <span class="region-dot" style="background:var(--blue)"></span>Sacramento metro
+        <span style="margin-left:8px;font-size:10px;font-weight:600;background:#FFF3CD;color:#856404;border:1px solid #FFDA6A;padding:2px 8px;border-radius:20px">Priority #3 · Downgraded · Sindy skew detected</span>
+      </div>
+      <div class="region-meta">
+        <span>13 deals</span><span><strong>$125,764</strong> adj. (was $167,997)</span>
+        <span>FB spend: <strong>$20.4K</strong></span>
+        <span>Signal quality: <strong style="color:var(--amber)">75% clean</strong></span>
+      </div>
+    </div>
+    <table>
+      <thead><tr>
+        <th style="width:18%">City</th><th style="width:8%">Zip</th><th>Neighborhoods</th>
+        <th class="r" style="width:11%">Revenue</th><th class="c" style="width:7%">Deals</th>
+        <th class="c" style="width:9%">Stage</th><th class="c" style="width:10%">Signal</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="bold">Stockton</td><td><span class="mono" style="color:var(--blue)">95202</span></td><td><span class="nbhd">Downtown Stockton</span><span class="nbhd">Midtown</span></td><td class="r bold">$57,182</td><td class="c">1</td><td class="c"><span class="pill p-sold">Sold</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Lathrop</td><td><span class="mono" style="color:var(--blue)">95330</span></td><td><span class="nbhd">Mossdale Landing</span></td><td class="r bold">$23,925</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Sacramento South</td><td><span class="mono" style="color:var(--blue)">95823</span></td><td><span class="nbhd">Florin</span><span class="nbhd">Valley Hi</span></td><td class="r bold">$24,857</td><td class="c">2</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr><td class="bold">Folsom</td><td><span class="mono" style="color:var(--blue)">95630</span></td><td><span class="nbhd">Willow Creek</span><span class="nbhd">Natoma Station</span></td><td class="r bold">$22,439</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-skew">Blank/Sindy</span></td></tr>
+        <tr><td class="bold">Sacramento NW</td><td><span class="mono" style="color:var(--blue)">95833</span></td><td><span class="nbhd">Natomas</span><span class="nbhd">North Natomas</span></td><td class="r bold">$16,464</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">YouTube</span></td></tr>
+        <tr class="skew-row"><td class="bold">El Dorado Hills</td><td><span class="mono" style="color:var(--blue)">95762</span></td><td><span class="nbhd">Bass Lake Hills</span><span class="nbhd">Serrano</span></td><td class="r bold">$8,751</td><td class="c">2</td><td class="c"><span class="pill p-fm">FM</span></td><td class="c"><span class="pill p-skew">Facebook/Sindy</span></td></tr>
+        <tr><td class="bold">Roseville</td><td><span class="mono" style="color:var(--blue)">95747</span></td><td><span class="nbhd">Fiddyment Ranch</span></td><td class="r bold">$6,000</td><td class="c">1</td><td class="c"><span class="pill p-sold">Sold</span></td><td class="c"><span class="pill p-skew">Blank/Sindy</span></td></tr>
+        <tr><td class="bold">Sacramento Ctr / East</td><td><span class="mono" style="color:var(--blue)">95816</span></td><td><span class="nbhd">Midtown</span><span class="nbhd">Rosemont</span></td><td class="r bold">$5,835</td><td class="c">2</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+        <tr class="skew-row"><td class="bold">Rocklin</td><td><span class="mono" style="color:var(--blue)">95765</span></td><td><span class="nbhd">Stanford Ranch</span></td><td class="r bold">$2,545</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SO CAL -->
+  <div class="region-block">
+    <div class="region-hdr socal-hdr">
+      <div class="region-name">
+        <span class="region-dot" style="background:var(--amber)"></span>So Cal (non-LA)
+        <span style="margin-left:8px;font-size:10px;font-weight:600;background:var(--red-l);color:#791F1F;padding:2px 8px;border-radius:20px">Priority #4 · Exploratory only · 1-client risk</span>
+      </div>
+      <div class="region-meta">
+        <span>5 deals</span><span><strong>$21,782</strong> adj. (was $64,454)</span>
+        <span>FB spend: <strong>$2.7K</strong></span>
+        <span>Signal quality: <strong style="color:var(--red)">34% clean</strong></span>
+      </div>
+    </div>
+    <table>
+      <thead><tr>
+        <th style="width:18%">City</th><th style="width:8%">Zip</th><th>Neighborhoods</th>
+        <th class="r" style="width:11%">Revenue</th><th class="c" style="width:7%">Deals</th>
+        <th class="c" style="width:9%">Stage</th><th class="c" style="width:10%">Signal</th>
+      </tr></thead>
+      <tbody>
+        <tr class="skew-row"><td class="bold">Yorba Linda <span class="skew-inline">1 client</span></td><td><span class="mono" style="color:var(--amber)">92886</span></td><td><span class="nbhd">Yolanda Gellis ×2</span><span class="nbhd">Client relationship only</span></td><td class="r bold" style="color:var(--amber)">$42,672</td><td class="c">2</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-skew">Client rel.</span></td></tr>
+        <tr><td class="bold">Chula Vista</td><td><span class="mono" style="color:var(--amber)">91910</span></td><td><span class="nbhd">Otay Ranch adj.</span><span class="nbhd">Eastlake</span></td><td class="r bold">$16,910</td><td class="c">1</td><td class="c"><span class="pill p-fm">FM</span></td><td class="c"><span class="pill p-clean">YouTube</span></td></tr>
+        <tr><td class="bold">San Bernardino</td><td><span class="mono" style="color:var(--amber)">92407</span></td><td><span class="nbhd">Verdemont</span></td><td class="r bold">$2,450</td><td class="c">1</td><td class="c"><span class="pill p-done">Done</span></td><td class="c"><span class="pill p-clean">Instagram</span></td></tr>
+        <tr><td class="bold">Pacific Beach / SD</td><td><span class="mono" style="color:var(--amber)">92109</span></td><td><span class="nbhd">Crown Point</span><span class="nbhd">Mission Bay adj.</span></td><td class="r bold">$2,423</td><td class="c">1</td><td class="c"><span class="pill p-sold">Sold</span></td><td class="c"><span class="pill p-clean">Google</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ SCORECARD ═══ -->
+<div class="section">
+  <div class="section-label">Zipcode targeting scorecard — skew-adjusted scores</div>
+  <p style="font-size:11px;color:var(--gray-400);margin-bottom:10px">Score adjusted: Bay Area zips upgraded (pure signal), Sacramento network-source zips downgraded, Yorba Linda 92886 downgraded from 87→52 (1-client risk). Scores reflect ad-replicable demand only.</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="c" style="width:7%">Score</th>
+          <th style="width:8%">Zip</th>
+          <th style="width:17%">City / neighborhood</th>
+          <th style="width:8%">Metro</th>
+          <th class="c" style="width:6%">Deals</th>
+          <th class="r" style="width:11%">Adj. revenue</th>
+          <th class="r" style="width:11%">Avg deal</th>
+          <th class="c" style="width:9%">Ad hist.</th>
+          <th style="width:13%">Recommendation</th>
+        </tr>
+      </thead>
+      <tbody id="scorecard-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ RECOMMENDATIONS ═══ -->
+<div class="section">
+  <div class="section-label">Geographic ad targeting — skew-adjusted zip code recommendations</div>
+  <div class="rec-grid" id="rec-grid"></div>
+</div>
+
+<!-- ═══ SKEW DETAIL ═══ -->
+<div class="section" id="skew-detail">
+  <div class="section-label">Rep position skew analysis — what changed and why</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Rep</th>
+          <th class="c">CA deals</th>
+          <th class="r">Revenue</th>
+          <th>Coverage area</th>
+          <th>Primary sources</th>
+          <th class="c">Skew risk</th>
+          <th>Impact on data</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="bold">J Kerr</td>
+          <td class="c">17</td>
+          <td class="r">$207K</td>
+          <td class="muted">LA, Bay, Sac, SD — broad</td>
+          <td><span class="pill p-high">Google ×12</span> <span class="pill p-high">FB ×2</span></td>
+          <td class="c"><span class="pill p-clean">Low</span></td>
+          <td class="muted" style="font-size:11px">No geo concentration. Closes inbound digitally from NV.</td>
+        </tr>
+        <tr>
+          <td class="bold">David Mauney</td>
+          <td class="c">11</td>
+          <td class="r">$118K</td>
+          <td class="muted">LA, Bay, Sac, SoCal — broad</td>
+          <td><span class="pill p-high">Google ×7</span> <span class="pill p-high">IG ×2</span></td>
+          <td class="c"><span class="pill p-clean">Low</span></td>
+          <td class="muted" style="font-size:11px">No geographic concentration. All digital inbound.</td>
+        </tr>
+        <tr class="skew-row">
+          <td class="bold" style="color:var(--amber)">Sindy Thonhoff <span style="font-size:10px;color:var(--gray-400);font-weight:400">(VP Sales)</span></td>
+          <td class="c">9</td>
+          <td class="r">$97K</td>
+          <td class="muted" style="color:var(--amber);font-weight:500">Sacramento 78%</td>
+          <td><span class="pill p-clean" style="font-size:9px">Google ×3</span> <span class="pill p-skew">Referral ×1</span> <span class="pill p-skew">YouTube ×1</span> <span class="pill p-skew">Returning ×1</span> <span class="pill p-skew">Blank ×3</span></td>
+          <td class="c"><span class="pill p-skew">HIGH</span></td>
+          <td style="font-size:11px;color:var(--amber)">4 of 9 deals = personal network. Sacramento is real but inflated ~25% by relationships not ads.</td>
+        </tr>
+        <tr class="skew-row">
+          <td class="bold" style="color:var(--amber)">Sindy Thonhoff <span style="font-size:10px;color:var(--gray-400);font-weight:400">(Yorba Linda)</span></td>
+          <td class="c">2</td>
+          <td class="r">$42.7K</td>
+          <td class="muted" style="color:var(--amber)">Yorba Linda only</td>
+          <td><span class="pill p-clean" style="font-size:9px">Google ×1</span> <span class="pill p-skew">Blank ×1</span></td>
+          <td class="c"><span class="pill p-pause">CRITICAL</span></td>
+          <td style="font-size:11px;color:var(--red)">Both deals = 1 client (Yolanda Gellis). Not a market — a relationship. So Cal's rank is inflated.</td>
+        </tr>
+        <tr>
+          <td class="bold">No rep assigned</td>
+          <td class="c">4</td>
+          <td class="r">$55K</td>
+          <td class="muted">Chatsworth, Ojai, LA</td>
+          <td><span class="pill p-high">Google ×3</span> <span class="pill p-high">LSA ×1</span></td>
+          <td class="c"><span class="pill p-clean">None</span></td>
+          <td class="muted" style="font-size:11px">Early 2022–23 deals pre-CA team. All ad-driven.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="info-box" style="margin:0;border-radius:0;border:none;border-top:1px solid var(--border)">
+      <strong>Key implication for ad budget allocation</strong>
+      <p>Bay Area is now the highest-confidence expansion market — every close happened organically with near-zero ad spend, meaning a $2–3K test campaign could unlock outsized returns. LA remains a strong second with the cleanest volume signal (96% ad-driven). Sacramento warrants continued investment but with ~25% lower ROI expectations. So Cal should receive only exploratory budget ($500–1K) until a second non-Gellis client closes there independently.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ EFFICIENCY ═══ -->
+<div class="section">
+  <div class="section-label">Ad spend efficiency by campaign region (Facebook · Windsor.ai) — adjusted</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Campaign / region</th>
+          <th class="r">Ad spend</th>
+          <th class="r">Adj. revenue</th>
+          <th class="r">Adj. ROAS</th>
+          <th class="r">$/click</th>
+          <th>Adj. assessment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="region-dot" style="background:var(--teal)"></span><strong>Bay Area</strong> <span class="muted">(organic)</span></td>
+          <td class="r">$925</td>
+          <td class="r bold">$68,707</td>
+          <td class="r"><span style="font-size:15px;font-weight:700;color:var(--teal)">74.3×</span></td>
+          <td class="r muted">—</td>
+          <td><span class="pill p-hot">Priority #1 · Launch immediately</span></td>
+        </tr>
+        <tr>
+          <td><span class="region-dot" style="background:var(--purple)"></span><strong>LA / Riverside</strong> <span class="muted">(TofF-LA + new_TofF)</span></td>
+          <td class="r">$39,209</td>
+          <td class="r bold">$191,826</td>
+          <td class="r"><span style="font-size:15px;font-weight:700;color:var(--purple)">4.9×</span></td>
+          <td class="r muted">$0.64/click</td>
+          <td><span class="pill p-warm">Priority #2 · Scale + expand zips</span></td>
+        </tr>
+        <tr>
+          <td><span class="region-dot" style="background:var(--blue)"></span><strong>Sacramento</strong> <span class="muted">(Cali_Sacramento LaL)</span></td>
+          <td class="r">$20,368</td>
+          <td class="r bold">$125,764</td>
+          <td class="r"><span style="font-size:15px;font-weight:700;color:var(--blue)">6.2×</span></td>
+          <td class="r muted">$0.90/click</td>
+          <td><span class="pill p-watch">Priority #3 · Calibrate ROI −25%</span></td>
+        </tr>
+        <tr class="skew-row">
+          <td><span class="region-dot" style="background:var(--amber)"></span><strong>So Cal / San Diego</strong> <span class="muted">(new_TofF San Diego)</span></td>
+          <td class="r">$2,650</td>
+          <td class="r bold">$21,782</td>
+          <td class="r"><span style="color:var(--amber);font-weight:600">8.2×</span> <span class="skew-inline">unreliable n=3</span></td>
+          <td class="r muted">$0.57/click</td>
+          <td><span class="pill p-cold">Priority #4 · $500 test only</span></td>
+        </tr>
+        <tr>
+          <td><span class="region-dot" style="background:var(--coral)"></span><strong>SFV / Encino</strong> <span class="muted">(PARTNER_Cali_Aziz_SFV)</span></td>
+          <td class="r">$9,327</td>
+          <td class="r bold">$57,870</td>
+          <td class="r"><span style="color:var(--amber);font-weight:600">6.2×</span></td>
+          <td class="r muted">$0.87/click</td>
+          <td><span class="pill p-watch">Monitor · No skew — pure digital</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="warn-box" style="margin:0;border-radius:0;border:none;border-top:1px solid var(--border)">
+      <strong>Windsor.ai data note</strong>
+      <p>Facebook data sourced from account 525932497775580 (Boss Security Screens). CA region spend reflects Facebook's region attribution which may include users residing in CA who saw ads targeted at other markets. Adjusted revenue figures subtract rep-network deals identified via lead source analysis (Referral, Returning Client, blank/unknown, Vehicles) attributed to Sindy Thonhoff's Sacramento network and Yolanda Gellis repeat-client relationship in Yorba Linda.</p>
+    </div>
+  </div>
+</div>
+
+<!-- footer -->
+<div style="margin-top:40px;padding-top:20px;border-top:1px solid var(--border);text-align:center">
+  <p style="font-size:11px;color:var(--gray-400)">Boss Security Screens · CA Geographic Ad Targeting (Skew-Adjusted) · March 2026 · All revenue figures adjusted for rep-network deals</p>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ── Skew-adjusted scorecard ────────────────────────────────────────────────
+// Changes from original:
+// 94086 Sunnyvale:    75→92  (pure organic, no ads, upgrade to Scale Now)
+// 94061 Redwood City: 72→88  (same, upgrade)
+// 94546 Castro Valley:65→80  (clean Instagram signal, upgrade)
+// 94607 Oakland:      68→55  (repeat family, downgrade)
+// 94542 Hayward:      30→42  (Google-driven, slight upgrade)
+// 95128 San Jose:     60→65  (Google-driven, slight upgrade)
+// 92886 Yorba Linda:  87→52  (1-client risk, major downgrade)
+// 95823 Sac S.:       82→72  (partial skew from Sindy)
+// 95330 Lathrop:      76→78  (Google via Sindy, mostly clean)
+// 95630 Folsom:       75→60  (blank/Sindy source, downgrade)
+// 95833 Sac NW:       74→74  (YouTube, clean — unchanged)
+// 95762 El Dorado:    63→52  (Facebook/Sindy, downgrade)
+// 95747 Roseville:    55→42  (blank/Sindy, downgrade)
+// 95816 Sac Ctr:      52→55  (Google-driven, slight upgrade)
+// 91910 Chula Vista:  71→74  (YouTube/Adam Rogers, clean — slight upgrade)
+// 90024 Westwood:     62→55  (Vehicles/network source)
+// All others unchanged
+const scorecard = [
+  ["94086","Sunnyvale","bay",         1, 18988, 18988,"Low", 92,"hot"],
+  ["94061","Redwood City","bay",      1, 15974, 15974,"Low", 88,"hot"],
+  ["91311","Chatsworth","la",         2, 57870, 28935,"High",95,"hot"],
+  ["95202","Stockton","sac",          1, 57182, 57182,"Med", 88,"hot"],
+  ["94546","Castro Valley","bay",     1, 10815, 10815,"Low", 80,"warm"],
+  ["90293","Playa del Rey","la",      1, 20292, 20292,"High",80,"warm"],
+  ["90004","Koreatown / LA","la",     1, 20000, 20000,"High",80,"warm"],
+  ["95823","Sacramento S.","sac",     2, 24857, 12429,"High",72,"warm"],
+  ["91350","Santa Clarita","la",      1, 18530, 18530,"High",77,"warm"],
+  ["91910","Chula Vista","socal",     1, 16910, 16910,"Low", 74,"new"],
+  ["95833","Sacramento NW","sac",     1, 16464, 16464,"High",74,"warm"],
+  ["90035","Beverlywood","la",        1, 15737, 15737,"High",74,"warm"],
+  ["90036","Fairfax / LA","la",       1, 15246, 15246,"High",73,"warm"],
+  ["90731","San Pedro / LA","la",     1, 19637, 19637,"High",78,"warm"],
+  ["95330","Lathrop","sac",           1, 23925, 23925,"Med", 78,"warm"],
+  ["94542","Hayward","bay",           1,  1825,  1825,"Low", 42,"cold"],
+  ["94607","Oakland","bay",           3, 13054,  4351,"Low", 55,"watch"],
+  ["90241","Downey","la",             1, 10193, 10193,"Med", 64,"watch"],
+  ["95128","San Jose","bay",          1,  8052,  8052,"Med", 65,"new"],
+  ["95816","Sacramento Ctr","sac",    1,  4205,  4205,"High",55,"watch"],
+  ["95630","Folsom","sac",            1, 22439, 22439,"Med", 60,"watch"],
+  ["90024","Westwood","la",           1,  8500,  8500,"High",55,"watch"],
+  ["92886","Yorba Linda","socal",     2, 21336, 10668,"Low", 52,"watch"],
+  ["95762","El Dorado Hills","sac",   2,  8751,  4376,"Med", 52,"watch"],
+  ["95747","Roseville","sac",         1,  6000,  6000,"Med", 42,"cold"],
+  ["90660","Pico Rivera","la",        1,  2495,  2495,"Med", 40,"cold"],
+  ["91103","Pasadena","la",           1,  2900,  2900,"Med", 42,"cold"],
+  ["90018","West Adams","la",         2,  3300,  1650,"High",44,"cold"],
+  ["90019","Mid-City","la",           1,  2850,  2850,"High",41,"cold"],
+  ["90045","Westchester","la",        1,  2775,  2775,"High",40,"cold"],
+  ["92407","San Bernardino","socal",  1,  2450,  2450,"Med", 35,"cold"],
+  ["92109","Pacific Beach","socal",   1,  2423,  2423,"Low", 40,"cold"],
+  ["95765","Rocklin","sac",           1,  2545,  2545,"Med", 38,"cold"],
+  ["95826","Sacramento E.","sac",     1,  1630,  1630,"Med", 28,"cold"],
+];
+scorecard.sort((a,b) => b[7]-a[7]);
+
+const metroColors = {la:"#534AB7",sac:"#378ADD",bay:"#1D9E75",socal:"#BA7517"};
+const metroPill = m => {
+  const lbl = {la:"LA",sac:"Sac",bay:"Bay",socal:"SoCal"}[m]||m;
+  return `<span class="pill p-${m}">${lbl}</span>`;
+};
+const recPill = r => {
+  const map = {
+    hot:  "p-hot,Scale now",
+    warm: "p-warm,Expand",
+    new:  "p-new,Launch ads",
+    watch:"p-watch,Monitor",
+    cold: "p-cold,Low priority",
+    pause:"p-pause,Pause"
+  };
+  const [cls,lbl] = (map[r]||"p-cold,—").split(",");
+  return `<span class="pill ${cls}">${lbl}</span>`;
+};
+const adCovPill = c => ({High:"p-high,High",Med:"p-med,Med",Low:"p-low,Low"}[c]||"p-cold,?").split(",");
+const fmt = n => "$" + n.toLocaleString();
+
+const tbody = document.getElementById("scorecard-body");
+scorecard.forEach(([zip,city,metro,deals,rev,avg,adcov,score,rec]) => {
+  const pct = Math.round(score/100*48);
+  const col = metroColors[metro]||"#888";
+  const [acls, albl] = adCovPill(adcov);
+  const isSkewed = (metro==="socal" && zip==="92886") || (metro==="sac" && ["95630","95762","95747"].includes(zip));
+  const rowCls = isSkewed ? ' class="skew-row"' : '';
+  tbody.innerHTML += `<tr${rowCls}>
+    <td class="c">
+      <div class="score-wrap" style="justify-content:center">
+        <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pct}px;background:${col}"></div></div>
+        <span class="score-num" style="color:${col}">${score}</span>
+      </div>
+    </td>
+    <td><span class="mono" style="color:${col}">${zip}</span>${isSkewed ? '<span class="skew-inline">⚠</span>' : ''}</td>
+    <td class="muted" style="font-size:11.5px">${city}</td>
+    <td>${metroPill(metro)}</td>
+    <td class="c bold">${deals}</td>
+    <td class="r bold">${fmt(rev)}</td>
+    <td class="r muted">${fmt(avg)}</td>
+    <td class="c"><span class="pill ${acls}">${albl}</span></td>
+    <td>${recPill(rec)}</td>
+  </tr>`;
+});
+
+// ── Skew-adjusted recommendation cards ─────────────────────────────────────
+const recData = [
+  { tier:"Scale now", cls:"p-hot", color:"var(--teal)", subtitle:"Highest-confidence, 100% ad-driven markets",
+    items:[
+      {metro:"Bay",  range:"94086–94085", city:"Sunnyvale — Priority launch",
+       why:"$19K close with ZERO Facebook ads ever run here. Score upgraded to 92. High HHI ($170K+). Recommend Google LSA first, then Facebook retargeting. Cleanest market opportunity in CA."},
+      {metro:"Bay",  range:"94061–94062", city:"Redwood City / Woodside",
+       why:"$16K close with zero ad history. Score upgraded to 88. 94062 (Woodside) is ultra-high-income adjacent. No rep proximity — pure market signal. Launch with premium creative."},
+      {metro:"LA",   range:"91311–91326", city:"Chatsworth / West Hills / Northridge",
+       why:"2 closes at $28.9K avg — Google-driven, no rep network component. Score 95. Adjacent zips 91324–91326 untouched. Existing TofF-LA campaign already reaching — increase budget."},
+    ]},
+  { tier:"Expand — already working", cls:"p-warm", color:"var(--blue)", subtitle:"Strong clean signal — widen into adjacent zips",
+    items:[
+      {metro:"Bay",  range:"94546–94552", city:"Castro Valley / San Lorenzo",
+       why:"Score upgraded to 80 (was 65). $10.8K Instagram close with zero ad history. Adjacent 94552 is same demographics. Bay Area is the highest-confidence region — invest here."},
+      {metro:"LA",   range:"90293–90291", city:"Playa del Rey / Venice",
+       why:"$20K Google close in 90293. Venice (90291) is wealthy + high-homeowner density directly adjacent. No BSS history — $1K test budget is very low risk."},
+      {metro:"LA",   range:"90004–90005", city:"Koreatown / Harvard Heights",
+       why:"$20K Google close in 90004. 90005 is directly adjacent with similar homeowner profile and lower ad competition than core LA zips."},
+      {metro:"LA",   range:"90035–90046", city:"Beverlywood / Fairfax / West Hollywood",
+       why:"2 digital closes in tight cluster. 90046 (West Hollywood) is immediately adjacent — high-income, high homeownership. Untapped."},
+      {metro:"Sac",  range:"95202, 95823, 95823", city:"Stockton / Sacramento South",
+       why:"Google-driven deals confirmed as clean signal. Stockton $57K Jumbo still active (Sold). These zips are the reliable ad-addressable core of Sacramento — extend Cali_Sacramento LaL here first."},
+    ]},
+  { tier:"Launch ads — no coverage yet", cls:"p-new", color:"var(--purple)", subtitle:"Organic closes with zero paid support — upside with clean signal",
+    items:[
+      {metro:"Bay",  range:"95128–95051", city:"San Jose / Santa Clara",
+       why:"$8K Google close organically. Score upgraded to 65. San Jose / Santa Clara corridor has very high homeowner density and HHI. No BSS ads running here — real opportunity."},
+      {metro:"SoCal",range:"91910–91914", city:"Chula Vista / Eastlake",
+       why:"$17K FM active via Adam Rogers (YouTube, clean signal). Score 74. Entire Chula Vista corridor unserved by ads. This is the only credible So Cal expansion zip after removing Yorba Linda skew."},
+      {metro:"Sac",  range:"95833–95835", city:"Natomas / North Natomas",
+       why:"$16K YouTube close — ad-driven, confirmed clean. 95835 (North Natomas) is newer construction, same commuter demographic. Include in next Cali_Sacramento LaL expansion."},
+    ]},
+  { tier:"Monitor / validate first", cls:"p-watch", color:"var(--amber)", subtitle:"Skewed data, repeat clients, or weak signal — verify before scaling",
+    items:[
+      {metro:"SoCal",range:"92886–92887", city:"Yorba Linda — DOWNGRADED",
+       why:"Score dropped 87→52. $42.7K is 1 repeat client (Yolanda Gellis ×2). This is a client relationship, not market demand. 92887 expansion recommendation withdrawn until a second independent client closes here."},
+      {metro:"Sac",  range:"95630, 95762, 95747", city:"Folsom / El Dorado Hills / Roseville — PARTIAL SKEW",
+       why:"These zips sourced through Sindy with blank/Facebook sources. Real demand may exist but cannot confirm without non-network closes. Test $500 budget before scaling."},
+      {metro:"Bay",  range:"94607–94608", city:"Oakland",
+       why:"3 closes but avg only $4.4K (Moss family, same household, repeat buyer). Score dropped 68→55. Need non-repeat organic signal before running paid ads here."},
+      {metro:"LA",   range:"90241–90242", city:"Downey",
+       why:"$10K close via broad LA campaign — ad coverage was indirect. Run a $500 zip-targeted test on Facebook before committing larger budget."},
+    ]},
+];
+
+const metroLblColor = m => ({LA:"var(--purple)",Sac:"var(--blue)",Bay:"var(--teal)",SoCal:"var(--amber)"}[m]||"#888");
+const recGrid = document.getElementById("rec-grid");
+recData.forEach(r => {
+  const card = document.createElement("div");
+  card.className = "rec-card";
+  card.innerHTML = `
+    <div class="rec-card-hdr">
+      <span class="pill ${r.cls}">${r.tier}</span>
+      <h3>${r.subtitle}</h3>
+    </div>
+    ${r.items.map(item => `
+      <div class="rec-item">
+        <div class="rec-zip-row">
+          <span class="rec-zip" style="color:${r.color}">${item.range}</span>
+          <span style="font-size:10px;font-weight:600;color:${metroLblColor(item.metro)}">${item.metro}</span>
+        </div>
+        <div class="rec-city">${item.city}</div>
+        <div class="rec-why">${item.why}</div>
+      </div>
+    `).join("")}
+  `;
+  recGrid.appendChild(card);
+});
+</script>
+</body>
+</html>
