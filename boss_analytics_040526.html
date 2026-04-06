@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boss Security Screens — Weekly Analytics Apr 5, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#e63518;--green:#3dba72;--amber:#f0a500;--blue:#4a9fd4;
+  --grey:#aaaaaa;--bg:#0a0a0a;--card:#111111;--card2:#161616;
+  --border:#252525;--text:#f0f0f0;--muted:#666666;--mid:#999999;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:15px}
+body::before{content:'';position:fixed;left:0;top:0;width:5px;height:100vh;background:var(--red);z-index:200}
+
+/* ── STICKY SHELL ── */
+.sticky-shell{position:sticky;top:0;z-index:160;}
+
+/* ── HEADER ── */
+.hdr{background:var(--card);border-bottom:1px solid var(--border);padding:26px 40px 22px 48px;
+  background-image:radial-gradient(circle,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:20px 20px;}
+.hdr-inner{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-pip{width:10px;height:10px;background:var(--red);border-radius:50%;flex-shrink:0}
+.brand h1{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:800;letter-spacing:3px;text-transform:uppercase;line-height:1}
+.brand h1 em{color:var(--red);font-style:normal}
+.wk-badge{display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:3px 12px;border:1px solid #2a2a2a;border-radius:20px;font-size:12px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.wk-badge::before{content:'';width:6px;height:6px;background:var(--red);border-radius:50%;opacity:.7}
+.qs{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end}
+.q{text-align:right}
+.q-v{font-family:'Barlow Condensed',sans-serif;font-size:33px;font-weight:700;line-height:1}
+.q-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-top:3px}
+.q-ch{font-size:11px;margin-top:2px}
+.chg-u{color:var(--green)}.chg-d{color:var(--red)}.chg-n{color:var(--muted)}
+.q.r .q-v{color:var(--red)}.q.g .q-v{color:var(--green)}.q.a .q-v{color:var(--amber)}.q.w .q-v{color:var(--text)}
+
+/* ── TOOLBAR ── */
+.toolbar{background:var(--card);border-bottom:1px solid var(--border);padding:8px 40px 8px 48px;display:flex;align-items:center;justify-content:space-between;}
+.nav-pills{display:flex;gap:4px}
+.np{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:.5px;padding:6px 16px;border-radius:3px;cursor:pointer;border:none;background:transparent;color:var(--muted);text-transform:uppercase;transition:all .15s;text-decoration:none}
+.np:hover{color:var(--text);background:#1a1a1a}
+.dl-btn{background:var(--red);color:#fff;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;letter-spacing:.5px;padding:8px 22px;border-radius:3px;transition:opacity .15s}
+.dl-btn:hover{opacity:.82}
+
+/* ── PAGE ── */
+.page{max-width:1320px;margin:0 auto;padding:36px 36px 80px 48px}
+.sec{margin-bottom:52px}
+.sec-hdr{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.sec-num{background:var(--red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1.5px;flex-shrink:0}
+.sec-ttl{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.action-title{font-size:16px;font-weight:600;color:var(--mid);letter-spacing:.3px;font-style:italic;margin-bottom:18px;line-height:1.4;border-left:2px solid var(--red);padding-left:10px}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:5px;border-top:3px solid var(--red);padding:24px;animation:fu .35s ease both}
+.card0{background:var(--card);border:1px solid var(--border);border-radius:5px;border-top:3px solid var(--red);overflow:hidden;animation:fu .35s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.sw{background:#0d0d0d;border:1px solid #1e1e1e;border-left:2px solid var(--red);padding:10px 14px;border-radius:3px;font-size:13px;color:var(--mid);line-height:1.6;margin-top:16px}
+.sw strong{color:var(--text)}
+
+/* ── SANKEY ── */
+#sankey_div{height:260px}
+.flow-row{display:flex;gap:0;margin-top:14px;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.fs{flex:1;padding:14px 18px;border-right:1px solid var(--border)}
+.fs:last-child{border-right:none}
+.fs-v{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:700;line-height:1}
+.fs-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+.fs-r{font-size:12px;color:var(--amber);margin-top:5px}
+
+/* ── TABLES ── */
+table{width:100%;border-collapse:collapse}
+th{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:9px 14px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid #161616;font-size:14px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+.rk{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700}
+.rk1{background:var(--red);color:#fff}.rk2{background:#d0d0d0;color:#111}.rk3{background:#7a8a96;color:#fff}.rkn{background:#1e1e1e;color:var(--muted)}
+.bar-wrap{display:flex;align-items:center;gap:8px}
+.bar-bg{flex:1;height:5px;background:#1a1a1a;border-radius:3px;min-width:80px}
+.bar-fill{height:5px;border-radius:3px;background:var(--red)}
+.bar-pct{font-size:12px;color:var(--muted);width:34px;text-align:right;font-family:'Barlow Condensed',sans-serif;font-weight:600}
+.amber-flag{color:var(--amber)}
+
+/* trend sparkline cells */
+.spark{display:flex;gap:3px;align-items:flex-end;height:24px}
+.spark-bar{width:9px;border-radius:2px 2px 0 0;background:var(--dark);flex-shrink:0}
+.trend-up{color:var(--green);font-size:12px;font-weight:600}
+.trend-dn{color:var(--red);font-size:12px;font-weight:600}
+.trend-fl{color:var(--muted);font-size:12px}
+
+/* ── TOGGLE ── */
+.tog-row{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.tog{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:5px 14px;border-radius:3px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .12s}
+.tog.on{background:var(--red);color:#fff;border-color:var(--red)}
+.cp{display:none}.cp.on{display:block}
+
+/* ── KPI GRID ── */
+.kpi-g{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.kpi{background:var(--card2);border:1px solid var(--border);border-radius:5px;padding:20px 22px;animation:fu .35s ease both}
+.kpi-v{font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:700;line-height:1}
+.kpi-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-top:5px}
+.kpi-s{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.55}
+.kpi-wow{font-size:12px;margin-top:5px}
+.kpi.r .kpi-v{color:var(--red)}.kpi.g .kpi-v{color:var(--green)}.kpi.a .kpi-v{color:var(--amber)}.kpi.b .kpi-v{color:var(--blue)}.kpi.w .kpi-v{color:var(--text)}.kpi.gr .kpi-v{color:var(--grey)}
+
+/* ── TWO-COL ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:20px}
+.pttl{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin-bottom:16px}
+
+/* gauge */
+.gr{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.gs{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;width:52px}
+.gb{flex:1;height:9px;background:#181818;border-radius:5px;overflow:hidden}
+.gf{height:9px;border-radius:5px}
+.groi{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;width:56px;text-align:right}
+.grev{font-size:12px;color:var(--muted);width:68px;text-align:right}
+.src-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* ── EXEC INSIGHTS ── */
+.ei-hero{background:linear-gradient(135deg,#0d0d0d,#151515);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:5px;padding:28px 32px;margin-bottom:20px;position:relative;overflow:hidden}
+.ei-hero::after{content:'CONFIDENTIAL';position:absolute;right:28px;top:18px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:#1e1e1e}
+.ei-lbl{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.ei-sum{font-size:15px;line-height:1.8;color:#bbb;max-width:920px}
+.ei-sum strong{color:var(--text);font-weight:600}
+.ei-div{height:1px;background:linear-gradient(90deg,var(--red),transparent);margin:20px 0}
+.verdict-row{display:flex;gap:36px;flex-wrap:wrap}
+.verdict-item .v-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;line-height:1}
+.verdict-item .v-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-top:3px}
+.sub-hdr{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:18px}
+
+.ins-g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+.ins{background:#0d0d0d;border:1px solid var(--border);border-radius:5px;padding:20px;position:relative}
+.ins::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:5px 0 0 5px}
+.ins.bl::before{background:var(--blue)}.ins.am::before{background:var(--amber)}.ins.gn::before{background:var(--green)}
+.ins-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;display:inline-block;padding:2px 8px;border-radius:2px;margin-bottom:10px}
+.tag-bl{background:rgba(74,159,212,.12);color:var(--blue)}.tag-am{background:rgba(240,165,0,.12);color:var(--amber)}.tag-gn{background:rgba(61,186,114,.12);color:var(--green)}
+.ins-h{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;line-height:1.3;color:var(--text);margin-bottom:10px}
+.ins-b{font-size:13px;line-height:1.75;color:#888}
+.ins-b strong{color:#bbb;font-weight:600}
+.ins-stat{margin-top:12px;padding-top:10px;border-top:1px solid #1a1a1a;font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--muted)}
+.ins-stat span{color:var(--text);font-weight:600}
+
+.fn-g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+.fn{background:#0d0d0d;border:1px solid var(--border);border-radius:5px;padding:20px}
+.fn-stage{display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.fn-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.fn ul{list-style:none;padding:0}
+.fn ul li{font-size:13px;line-height:1.7;color:#888;padding:4px 0 4px 12px;border-bottom:1px solid #181818;position:relative}
+.fn ul li::before{content:'›';position:absolute;left:0;color:var(--red);font-weight:700}
+.fn ul li:last-child{border-bottom:none}
+.fn ul li strong{color:#bbb}
+.bkt{width:100%;border-collapse:collapse;margin-bottom:10px}
+.bkt th{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+.bkt td{padding:8px 8px;border-bottom:1px solid #181818;font-size:13px}
+.bkt tr:last-child td{border-bottom:none}
+.rp{display:inline-block;padding:2px 8px;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700}
+.rp-hi{background:rgba(61,186,114,.12);color:var(--green)}.rp-md{background:rgba(240,165,0,.12);color:var(--amber)}.rp-lo{background:rgba(230,53,24,.12);color:var(--red)}.rp-z{background:#1a1a1a;color:#555}
+
+.rc-g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.rc{background:#0d0d0d;border:1px solid var(--border);border-radius:5px;padding:22px}
+.rc-n{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--red);text-transform:uppercase;margin-bottom:6px}
+.rc-t{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.rc-h{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:12px}
+.rc-b{font-size:13px;line-height:1.75;color:#888}
+.rc-b strong{color:#bbb;font-weight:600}
+.rc-act{margin-top:14px;padding:10px 13px;background:rgba(230,53,24,.07);border:1px solid rgba(230,53,24,.18);border-radius:3px;font-size:12px;color:#bbb;line-height:1.6}
+.rc-act::before{content:'▶ ACTION:  ';font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--red);letter-spacing:.5px}
+
+.res-badge{display:inline-block;padding:2px 8px;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600}
+.res-a{background:rgba(61,186,114,.1);color:var(--green)}.res-b{background:rgba(74,159,212,.1);color:var(--blue)}.res-u{background:rgba(240,165,0,.1);color:var(--amber)}
+.note{background:#0c0c0c;border:1px solid #1e1e1e;border-left:3px solid var(--amber);padding:14px 18px;border-radius:3px;font-size:13px;color:var(--muted);line-height:1.8;margin-top:32px}
+
+/* ── TREND TABLE ── */
+.htbl th{background:#0d0d0d}
+.htbl td.cur{background:rgba(230,53,24,.05);font-weight:600}
+.htbl .avg-col{color:var(--muted);font-size:12px;font-style:italic}
+.warn{color:var(--red);font-weight:600}
+.ok{color:var(--green);font-weight:600}
+.neutral{color:var(--muted)}
+
+@media(max-width:900px){.kpi-g{grid-template-columns:1fr 1fr}.ins-g,.fn-g,.rc-g{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}}
+@media(max-width:600px){.kpi-g{grid-template-columns:1fr}.qs{gap:14px}}
+</style>
+</head>
+<body>
+
+<div class="sticky-shell">
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="brand">
+      <div class="brand-pip"></div>
+      <div>
+        <h1>WEEKLY <em>ANALYTICS</em></h1>
+        <div class="wk-badge">Mar 30 &ndash; Apr 5, 2026</div>
+      </div>
+    </div>
+    <div class="qs">
+      <div class="q w">
+        <div class="q-v">255</div><div class="q-l">Leads</div>
+        <div class="q-ch chg-u">&#9650; +1.6% vs prior</div>
+      </div>
+      <div class="q a">
+        <div class="q-v">49</div><div class="q-l">Estimates</div>
+        <div class="q-ch chg-d">&#9660; &minus;9.3% vs prior</div>
+      </div>
+      <div class="q g">
+        <div class="q-v">17</div><div class="q-l">Sales</div>
+        <div class="q-ch chg-d">&#9660; &minus;26% vs prior</div>
+      </div>
+      <div class="q r">
+        <div class="q-v">$148.6K</div><div class="q-l">Revenue</div>
+        <div class="q-ch chg-d">&#9660; &minus;16% vs prior</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toolbar">
+  <nav class="nav-pills">
+    <a class="np" href="#s01">Funnel</a>
+    <a class="np" href="#s02">Reps</a>
+    <a class="np" href="#s03">Trends</a>
+    <a class="np" href="#s04">KPIs</a>
+    <a class="np" href="#s05">Insights</a>
+    <a class="np" href="#s06">Attribution</a>
+  </nav>
+  <button class="dl-btn" onclick="dlCSV()">&#8659; Download Data</button>
+</div>
+</div><!-- /sticky-shell -->
+
+<div class="page">
+
+<!-- 01 SANKEY -->
+<div class="sec" id="s01">
+  <div class="sec-hdr"><span class="sec-num">01</span><span class="sec-ttl">Conversion Flow</span></div>
+  <div class="action-title">Lead &rarr; Estimate rate has fallen every week for 4 straight weeks: 42.4% &rarr; 23.7% &rarr; 21.5% &rarr; 19.2% &mdash; a systematic mid-funnel breakdown, not a one-week anomaly</div>
+  <div class="card">
+    <div id="sankey_div"></div>
+    <div class="flow-row">
+      <div class="fs"><div class="fs-v" style="color:var(--blue)">255</div><div class="fs-l">Total Leads</div></div>
+      <div class="fs"><div class="fs-v" style="color:var(--amber)">49</div><div class="fs-l">Estimates Given</div><div class="fs-r">Lead &rarr; Est: 19.2% &nbsp;&bull;&nbsp; 4-wk avg: 26.7%</div></div>
+      <div class="fs"><div class="fs-v" style="color:var(--green)">17</div><div class="fs-l">Deals Closed</div><div class="fs-r">Est &rarr; Close: 34.7% &nbsp;&bull;&nbsp; Overall: 6.7%</div></div>
+      <div class="fs"><div class="fs-v" style="color:var(--red)">$148,610</div><div class="fs-l">Revenue</div><div class="fs-r">4-wk avg $163,565</div></div>
+    </div>
+    <div class="sw">
+      <strong>This is not a bad week — it is a worsening trend.</strong> The L&rarr;E rate has collapsed 55% over 4 weeks (42.4% &rarr; 19.2%). Once an estimate is issued, the team closes 34.7% — that is improving. The crisis is upstream: 206 of 255 leads this week never reached a rep conversation.
+    </div>
+  </div>
+</div>
+
+<!-- 02 REPS -->
+<div class="sec" id="s02">
+  <div class="sec-hdr"><span class="sec-num">02</span><span class="sec-ttl">Revenue by Sales Rep</span></div>
+  <div class="action-title">Rogers is the only rep with a consistently rising 4-week revenue trend; Stramaglio&apos;s $90K week (Mar 23-29) masked a structural avg-deal problem that is now re-surfacing at $4,117</div>
+  <div class="card0">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:36px">#</th>
+          <th>Representative</th>
+          <th>Deals</th>
+          <th>Revenue</th>
+          <th>Avg Deal</th>
+          <th style="min-width:160px">Revenue Share</th>
+          <th>4-Wk Trend</th>
+          <th>WoW</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="rk rk1">1</span></td>
+          <td><strong>Adam Rogers</strong></td>
+          <td>5</td>
+          <td><strong>$55,620</strong></td>
+          <td>$11,124</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div><span class="bar-pct">37.4%</span></div></td>
+          <td><div class="spark">
+            <div class="spark-bar" style="height:6px;background:#444"></div>
+            <div class="spark-bar" style="height:2px;background:#444"></div>
+            <div class="spark-bar" style="height:20px;background:#444"></div>
+            <div class="spark-bar" style="height:16px;background:var(--green)"></div>
+          </div></td>
+          <td><span class="trend-dn">&#9660; $16K</span></td>
+        </tr>
+        <tr>
+          <td><span class="rk rk2">2</span></td>
+          <td><strong>Sindy Thonhoff</strong></td>
+          <td>3</td>
+          <td>$40,582</td>
+          <td>$13,527</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:73%"></div></div><span class="bar-pct">27.3%</span></div></td>
+          <td><div class="spark">
+            <div class="spark-bar" style="height:20px;background:#444"></div>
+            <div class="spark-bar" style="height:12px;background:#444"></div>
+            <div class="spark-bar" style="height:12px;background:#444"></div>
+            <div class="spark-bar" style="height:15px;background:var(--green)"></div>
+          </div></td>
+          <td><span class="trend-u">&#9650; $10K</span></td>
+        </tr>
+        <tr>
+          <td><span class="rk rk3">3</span></td>
+          <td><strong>J Kerr</strong></td>
+          <td>2</td>
+          <td>$15,081</td>
+          <td>$7,541</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:27%;background:var(--grey)"></div></div><span class="bar-pct">10.2%</span></div></td>
+          <td><div class="spark">
+            <div class="spark-bar" style="height:11px;background:#444"></div>
+            <div class="spark-bar" style="height:16px;background:#444"></div>
+            <div class="spark-bar" style="height:4px;background:#444"></div>
+            <div class="spark-bar" style="height:6px;background:var(--amber)"></div>
+          </div></td>
+          <td><span class="trend-u">&#9650; $6K</span></td>
+        </tr>
+        <tr>
+          <td><span class="rk rkn">4</span></td>
+          <td><strong>Nick Stramaglio</strong></td>
+          <td>3</td>
+          <td>$12,350</td>
+          <td class="amber-flag">$4,117 &#9650;</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:22%;background:var(--grey)"></div></div><span class="bar-pct">8.3%</span></div></td>
+          <td><div class="spark">
+            <div class="spark-bar" style="height:4px;background:#444"></div>
+            <div class="spark-bar" style="height:15px;background:#444"></div>
+            <div class="spark-bar" style="height:24px;background:var(--amber)"></div>
+            <div class="spark-bar" style="height:5px;background:var(--red)"></div>
+          </div></td>
+          <td><span class="trend-dn">&#9660; $78K</span></td>
+        </tr>
+        <tr>
+          <td><span class="rk rkn">5</span></td>
+          <td><strong>David Mauney</strong></td>
+          <td>2</td>
+          <td>$11,827</td>
+          <td>$5,914</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:20%;background:var(--grey)"></div></div><span class="bar-pct">7.9%</span></div></td>
+          <td><div class="spark">
+            <div class="spark-bar" style="height:20px;background:#444"></div>
+            <div class="spark-bar" style="height:0px;background:#444"></div>
+            <div class="spark-bar" style="height:0px;background:#444"></div>
+            <div class="spark-bar" style="height:4px;background:var(--green)"></div>
+          </div></td>
+          <td><span class="trend-u">Return</span></td>
+        </tr>
+        <tr>
+          <td><span class="rk rkn">&mdash;</span></td>
+          <td style="color:var(--muted)"><em>Unattributed rep</em></td>
+          <td>1</td>
+          <td style="color:var(--muted)">$10,500</td>
+          <td style="color:var(--muted)">$10,500</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:19%;background:#2a2a2a"></div></div><span class="bar-pct" style="color:var(--muted)">7.1%</span></div></td>
+          <td><span class="trend-fl">&mdash;</span></td>
+          <td><span class="trend-fl">&mdash;</span></td>
+        </tr>
+        <tr>
+          <td><span class="rk rkn">6</span></td>
+          <td><strong>Deana Buckley</strong></td>
+          <td>1</td>
+          <td>$2,650</td>
+          <td class="amber-flag">$2,650 &#9650;</td>
+          <td><div class="bar-wrap"><div class="bar-bg"><div class="bar-fill" style="width:5%;background:var(--grey)"></div></div><span class="bar-pct">1.8%</span></div></td>
+          <td><div class="spark">
+            <div class="spark-bar" style="height:3px;background:#444"></div>
+            <div class="spark-bar" style="height:2px;background:#444"></div>
+            <div class="spark-bar" style="height:6px;background:#444"></div>
+            <div class="spark-bar" style="height:1px;background:var(--red)"></div>
+          </div></td>
+          <td><span class="trend-dn">&#9660; $12K</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="padding:12px 14px 0;font-size:11px;color:var(--muted)">&#9650; Avg deal &gt;30% below team mean of $8,742 &nbsp;&bull;&nbsp; Sparklines = last 4 weeks of revenue (W1 Mar 2 through current)</div>
+    <div class="sw" style="margin:14px">
+      <strong>Nick Stramaglio&apos;s $90K week (Mar 23-29) was an outlier, not a level-set.</strong> Strip out that week and his 3-week avg is $16K on 2.3 deals &mdash; consistent with his historical pattern of moderate volume at below-average deal sizes. The $4,117 avg this week is his true baseline.
+    </div>
+  </div>
+</div>
+
+<!-- 03 TRENDS -->
+<div class="sec" id="s03">
+  <div class="sec-hdr"><span class="sec-num">03</span><span class="sec-ttl">Performance Trends &mdash; 5-Week View</span></div>
+  <div class="action-title">ROI has declined every week with ad spend: $13.8K &rarr; $12.9K &rarr; $13.3K &rarr; $15.8K while blended ROI fell from 14.1x to 9.4x &mdash; more spend is producing less efficiency</div>
+  <div class="card">
+    <div class="tog-row">
+      <button class="tog on" onclick="showP('pw',this)">Revenue &amp; Spend</button>
+      <button class="tog" onclick="showP('ple',this)">Lead &rarr; Est Rate</button>
+      <button class="tog" onclick="showP('proi',this)">ROI by State</button>
+      <button class="tog" onclick="showP('prep',this)">Rep Trends</button>
+      <button class="tog" onclick="showP('psrc',this)">Revenue by Source</button>
+    </div>
+    <div id="pw" class="cp on">
+      <canvas id="trendC" height="90"></canvas>
+      <div class="sw" style="margin-top:12px"><strong>Revenue is volatile week-to-week; spend is steadily increasing.</strong> The Mar 2-8 peak ($208K) was driven by an unusual TX deal concentration ($48K) and David Mauney&apos;s $54K week &mdash; both one-off events. Normalized, the revenue base is $146&ndash;$178K. Spend has increased $3K/wk since W2 while ROI has declined proportionally.</div>
+    </div>
+    <div id="ple" class="cp">
+      <canvas id="leC" height="90"></canvas>
+      <div class="sw" style="margin-top:12px"><strong>The Lead&rarr;Estimate rate has fallen 55% in 4 weeks without interruption.</strong> This is not noise &mdash; it is a structural breakdown in mid-funnel process. The estimate rate recovered briefly in W3 (21.5% &rarr; back up slightly) but this week&apos;s 19.2% is a new low. Root cause must be identified before AZ spend is scaled further.</div>
+    </div>
+    <div id="proi" class="cp">
+      <canvas id="roiStC" height="110"></canvas>
+      <div class="sw" style="margin-top:12px"><strong>AZ ROI is the clearest signal in the data.</strong> It has gone from 9.4x (W1) &rarr; 1.2x (W2) &rarr; 21.4x (W3) &rarr; 34.1x (W4). The W2 dip was a single-deal outlier (1 close). The 3-week trend is strongly upward. TX delivered 100x and 151x ROI in W1-W2 through one-off large deals but has produced $0 in revenue for 2 consecutive weeks on $2,113 in cumulative wasted spend.</div>
+    </div>
+    <div id="prep" class="cp">
+      <canvas id="repTrendC" height="110"></canvas>
+      <div class="sw" style="margin-top:12px"><strong>Rogers is the only rep with improving 4-week trajectory.</strong> Sindy Thonhoff has the highest average deal size ($13,527 this week) and is a stable performer. J Kerr peaked in W2 ($41K) and is trending down. David Mauney was absent for two consecutive weeks and returned at $12K &mdash; worth monitoring if the pattern repeats.</div>
+    </div>
+    <div id="psrc" class="cp">
+      <canvas id="srcRevC" height="110"></canvas>
+      <div class="sw" style="margin-top:12px"><strong>Google delivers 10.7x ROI &mdash; 5x the return of Facebook.</strong> Facebook spent $881 more than Google this week and generated 4.6x less revenue per dollar. Organic/Returning/Referral channels produced $46,800 combined at zero cost. YouTube appeared for the first time this week as a zero-cost attributed source.</div>
+    </div>
+  </div>
+
+  <!-- 5-week historical table -->
+  <div style="margin-top:20px">
+    <div class="action-title" style="margin-bottom:14px">5-week data table: the L&rarr;E rate collapse is the defining trend of March &mdash; not revenue volatility</div>
+    <div class="card0">
+      <table class="htbl">
+        <thead>
+          <tr>
+            <th>Week</th>
+            <th>Revenue</th>
+            <th>Deals</th>
+            <th>Leads</th>
+            <th>Estimates</th>
+            <th>L&rarr;E%</th>
+            <th>E&rarr;Close%</th>
+            <th>Spend</th>
+            <th>ROI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mar 2&ndash;8</td>
+            <td>$207,807</td><td>23</td><td>205</td><td>87</td>
+            <td class="ok">42.4%</td><td class="neutral">26.4%</td>
+            <td>$13,776</td><td class="ok">14.1x</td>
+          </tr>
+          <tr>
+            <td>Mar 9&ndash;15</td>
+            <td>$145,985</td><td>14</td><td>198</td><td>47</td>
+            <td class="warn">23.7%</td><td class="neutral">29.8%</td>
+            <td>$12,854</td><td class="neutral">11.4x</td>
+          </tr>
+          <tr>
+            <td>Mar 16&ndash;22</td>
+            <td>$151,859</td><td>20</td><td>251</td><td>54</td>
+            <td class="warn">21.5%</td><td class="ok">37.0%</td>
+            <td>$13,345</td><td class="neutral">11.4x</td>
+          </tr>
+          <tr>
+            <td>Mar 23&ndash;29</td>
+            <td>$177,710</td><td>23</td><td style="color:var(--muted)">—</td><td style="color:var(--muted)">—</td>
+            <td style="color:var(--muted)">—</td><td style="color:var(--muted)">—</td>
+            <td style="color:var(--muted)">—</td><td style="color:var(--muted)">—</td>
+          </tr>
+          <tr style="background:rgba(230,53,24,.04)">
+            <td><strong>Mar 30&ndash;Apr 5</strong></td>
+            <td><strong>$148,610</strong></td><td><strong>17</strong></td><td><strong>255</strong></td><td><strong>49</strong></td>
+            <td class="warn"><strong>19.2%</strong></td><td class="ok"><strong>34.7%</strong></td>
+            <td><strong>$15,841</strong></td><td class="warn"><strong>9.4x</strong></td>
+          </tr>
+          <tr style="background:#0c0c0c">
+            <td class="avg-col">4-Wk Avg (ex Mar 23)</td>
+            <td class="avg-col">$163,565</td><td class="avg-col">18.5</td><td class="avg-col">227</td><td class="avg-col">59</td>
+            <td class="avg-col">26.7%</td><td class="avg-col">32.0%</td>
+            <td class="avg-col">$13,954</td><td class="avg-col">11.6x</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 04 COMMAND CENTER -->
+<div class="sec" id="s04">
+  <div class="sec-hdr"><span class="sec-num">04</span><span class="sec-ttl">Command Center &mdash; Key Metrics</span></div>
+  <div class="action-title">9.4x blended ROI is 19% below the 4-week average of 11.6x &mdash; driven by Texas burning $1,772 for the second consecutive week with zero revenue</div>
+
+  <div class="kpi-g">
+    <div class="kpi r" style="animation-delay:.04s">
+      <div class="kpi-v">$148,610</div>
+      <div class="kpi-l">Total Revenue</div>
+      <div class="kpi-wow chg-d">&#9660; 16.4% vs prior week ($177,710)</div>
+      <div class="kpi-s">4-wk avg: $163,565 &nbsp;&bull;&nbsp; Avg deal: $8,742</div>
+    </div>
+    <div class="kpi w" style="animation-delay:.08s">
+      <div class="kpi-v">255</div>
+      <div class="kpi-l">Total Leads</div>
+      <div class="kpi-wow chg-u">&#9650; +1.6% vs prior (est. ~251)</div>
+      <div class="kpi-s">4-wk avg: 227 leads/week</div>
+    </div>
+    <div class="kpi a" style="animation-delay:.12s">
+      <div class="kpi-v">49</div>
+      <div class="kpi-l">Estimates Given</div>
+      <div class="kpi-wow chg-d">&#9660; 19.2% L&rarr;E &mdash; 4th consecutive weekly decline</div>
+      <div class="kpi-s">4-wk avg: 59 estimates/week</div>
+    </div>
+    <div class="kpi g" style="animation-delay:.16s">
+      <div class="kpi-v">17</div>
+      <div class="kpi-l">Deals Closed</div>
+      <div class="kpi-wow chg-d">&#9660; 26% vs prior week (23 deals)</div>
+      <div class="kpi-s">Est&rarr;Close: <strong>34.7%</strong> &nbsp;&bull;&nbsp; 4-wk avg: 32.0%</div>
+    </div>
+    <div class="kpi gr" style="animation-delay:.20s">
+      <div class="kpi-v">$15,841</div>
+      <div class="kpi-l">Marketing Spend</div>
+      <div class="kpi-wow chg-d">&#9660; Highest spend in 5 weeks (+$3K vs W2)</div>
+      <div class="kpi-s">FB: $8,361 &nbsp;&bull;&nbsp; Google: $7,480</div>
+    </div>
+    <div class="kpi b" style="animation-delay:.24s">
+      <div class="kpi-v">9.4x</div>
+      <div class="kpi-l">Overall ROI</div>
+      <div class="kpi-wow chg-d">&#9660; 19% below 4-wk avg (11.6x)</div>
+      <div class="kpi-s">4-wk low &nbsp;&bull;&nbsp; Spend up, returns compressing</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <div class="pttl">ROI by State &mdash; this week vs 4-wk avg</div>
+      <div class="gr">
+        <div class="gs" style="color:var(--green)">AZ</div>
+        <div class="gb"><div class="gf" style="width:100%;background:var(--green)"></div></div>
+        <div class="groi" style="color:var(--green)">34.1x</div>
+        <div class="grev" style="color:var(--green)">&#9650; vs 9.4x avg</div>
+      </div>
+      <div class="gr">
+        <div class="gs" style="color:var(--green)">NV</div>
+        <div class="gb"><div class="gf" style="width:30%;background:var(--green)"></div></div>
+        <div class="groi" style="color:var(--green)">10.4x</div>
+        <div class="grev">vs 13.4x avg</div>
+      </div>
+      <div class="gr">
+        <div class="gs" style="color:var(--green)">OTHER</div>
+        <div class="gb"><div class="gf" style="width:30%;background:var(--green)"></div></div>
+        <div class="groi" style="color:var(--green)">10.2x</div>
+        <div class="grev">vs 6.7x avg</div>
+      </div>
+      <div class="gr">
+        <div class="gs" style="color:var(--amber)">CA</div>
+        <div class="gb"><div class="gf" style="width:9%;background:var(--amber)"></div></div>
+        <div class="groi" style="color:var(--amber)">3.2x</div>
+        <div class="grev" style="color:var(--amber)">&#9660; vs 7.6x avg</div>
+      </div>
+      <div class="gr">
+        <div class="gs" style="color:var(--red)">TX</div>
+        <div class="gb"><div class="gf" style="width:0%"></div></div>
+        <div class="groi" style="color:var(--red)">&mdash; Loss</div>
+        <div class="grev" style="color:var(--red)">2nd wk $0</div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.7">Avg = mean of W1&ndash;W3 (weeks with spend data). TX had 100x &amp; 151x ROI in W1-W2 via large one-off deals; structurally it is a $0-revenue market.</div>
+      <div class="sw" style="margin-top:14px"><strong>AZ ROI is accelerating, not regressing.</strong> The W2 dip (1.2x) was a single close on 1 deal. 3-week trend: 9.4x &rarr; 21.4x &rarr; 34.1x. This market is building momentum while being funded at $1,631/week.</div>
+    </div>
+
+    <div class="panel">
+      <div class="pttl">ROI by Lead Source &mdash; post attribution recovery</div>
+      <table>
+        <thead><tr><th>Source</th><th>Spend</th><th>Revenue</th><th>Avg Deal</th><th>Share</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Google</strong><div class="src-sub">ROI: 10.7x &nbsp;&bull;&nbsp; 6 deals</div></td>
+            <td>$7,480</td><td><strong>$79,872</strong></td><td>$13,312</td><td>53.7%</td>
+          </tr>
+          <tr>
+            <td><strong>Returning Client</strong><div class="src-sub">Zero cost &nbsp;&bull;&nbsp; 5 deals</div></td>
+            <td style="color:var(--muted)">&mdash;</td><td>$30,250</td><td>$6,050</td><td>20.4%</td>
+          </tr>
+          <tr>
+            <td><strong>Facebook</strong><div class="src-sub" style="color:var(--red)">ROI: 2.1x &nbsp;&bull;&nbsp; 3 deals</div></td>
+            <td>$8,361</td><td>$17,357</td><td>$5,786</td><td>11.7%</td>
+          </tr>
+          <tr>
+            <td><strong>Organic / Direct</strong><div class="src-sub">Website, no UTM &nbsp;&bull;&nbsp; 1 deal</div></td>
+            <td style="color:var(--muted)">&mdash;</td><td>$14,000</td><td>$14,000</td><td>9.4%</td>
+          </tr>
+          <tr>
+            <td><strong>YouTube</strong><div class="src-sub">Zero cost &nbsp;&bull;&nbsp; 1st appearance</div></td>
+            <td style="color:var(--muted)">&mdash;</td><td>$4,581</td><td>$4,581</td><td>3.1%</td>
+          </tr>
+          <tr>
+            <td><strong>Referral</strong><div class="src-sub">Zero cost &nbsp;&bull;&nbsp; 1 deal</div></td>
+            <td style="color:var(--muted)">&mdash;</td><td>$2,550</td><td>$2,550</td><td>1.7%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 05 EXECUTIVE INSIGHTS -->
+<div class="sec" id="s05">
+  <div class="sec-hdr"><span class="sec-num">05</span><span class="sec-ttl">Executive Insights Report</span></div>
+
+  <div class="ei-hero">
+    <div class="ei-lbl">Executive Summary &mdash; Week of Mar 30 &ndash; Apr 5, 2026 &nbsp;&bull;&nbsp; 5-Week Context</div>
+    <div class="ei-sum">
+      This week&apos;s $148,610 in revenue at 9.4x ROI is the weakest marketing efficiency result in five weeks, and it sits 16% below the prior week. But the more important story is structural: <strong>the Lead&rarr;Estimate rate has declined every single week since Mar 2</strong>, from 42.4% to 19.2% &mdash; a 55% collapse that no single week&apos;s revenue figure reflects. The business is generating more leads than ever (255 this week, 4-wk high) while converting a smaller share of them to estimates than at any point this month. Simultaneously, <strong>Arizona&apos;s ROI has compounded from 9.4x &rarr; 21.4x &rarr; 34.1x over three consecutive weeks</strong> while receiving $1,631 in weekly spend &mdash; the lowest budget of any active market.
+    </div>
+    <div class="ei-div"></div>
+    <div class="verdict-row">
+      <div class="verdict-item"><div class="v-val" style="color:var(--amber)">MIXED</div><div class="v-lbl">Week Verdict</div></div>
+      <div class="verdict-item"><div class="v-val" style="color:var(--green)">AZ MOMENTUM</div><div class="v-lbl">Primary Opportunity</div></div>
+      <div class="verdict-item"><div class="v-val" style="color:var(--red)">L&rarr;E COLLAPSE</div><div class="v-lbl">Systemic Risk</div></div>
+    </div>
+  </div>
+
+  <div class="sub-hdr">1 &mdash; Key Business Drivers</div>
+  <div class="ins-g">
+    <div class="ins bl">
+      <div class="ins-tag tag-bl">Marketing Efficiency</div>
+      <div class="ins-h">Spend is rising while ROI falls &mdash; the trend is unsustainable over a 5-week horizon</div>
+      <div class="ins-b">Marketing spend has increased from <strong>$12,854 (W2) to $15,841 (W4)</strong> &mdash; a 23% increase &mdash; while blended ROI has declined from 14.1x to 9.4x. This is not a temporary dip: every week with available data shows compressing returns. The specific driver is Facebook&apos;s persistent underperformance: it has received between $7,127&ndash;$8,361/week for four weeks and delivered <strong>ROI between 1.2x and 8.0x</strong>, with this week&apos;s 2.1x being its second-worst result in the window.</div>
+      <div class="ins-stat">5-wk ROI: <span>14.1x</span> &rarr; <span>11.4x</span> &rarr; <span>11.4x</span> &rarr; <span>9.4x</span> &nbsp;&bull;&nbsp; FB 4-wk avg: <span>3.8x</span></div>
+    </div>
+    <div class="ins am">
+      <div class="ins-tag tag-am">Sales Operations</div>
+      <div class="ins-h">The mid-funnel is broken and has been breaking for four consecutive weeks</div>
+      <div class="ins-b">The Lead&rarr;Estimate rate has declined without interruption: <strong>42.4% &rarr; 23.7% &rarr; 21.5% &rarr; 19.2%</strong>. This is not a CA-specific problem &mdash; it is a company-wide process failure. At the W1 rate of 42.4%, this week&apos;s 255 leads would have generated 108 estimates instead of 49. At the team&apos;s 34.7% close rate, that gap represents <strong>approximately 20 additional closed deals and $175K in recoverable revenue</strong> &mdash; every single week this problem goes unresolved.</div>
+      <div class="ins-stat">W1 rate: <span>42.4%</span> &nbsp;&bull;&nbsp; Current: <span style="color:var(--red)">19.2%</span> &nbsp;&bull;&nbsp; Revenue gap/week: <span>~$175K</span></div>
+    </div>
+    <div class="ins gn">
+      <div class="ins-tag tag-gn">Market Opportunity</div>
+      <div class="ins-h">Arizona&apos;s ROI acceleration is the strongest confirmed signal in five weeks of data</div>
+      <div class="ins-b">AZ ROI over the last three weeks with spend data: <strong>9.4x &rarr; 21.4x &rarr; 34.1x</strong>. Revenue has grown from $20K &rarr; $31K &rarr; $56K over the same period, while spend has remained essentially flat at $1,449&ndash;$1,631/week. This is not statistical noise &mdash; it is a market where close infrastructure has strengthened and lead quality has improved. AZ is receiving <strong>10.3% of the marketing budget</strong> and generating 37.4% of this week&apos;s revenue.</div>
+      <div class="ins-stat">AZ 3-wk rev: <span>$20K</span> &rarr; <span>$31K</span> &rarr; <span>$56K</span> &nbsp;&bull;&nbsp; AZ 3-wk ROI: <span>9.4x</span> &rarr; <span>21.4x</span> &rarr; <span>34.1x</span></div>
+    </div>
+  </div>
+
+  <div class="sub-hdr">2 &mdash; Funnel &amp; Bottleneck Analysis</div>
+  <div class="fn-g">
+    <div class="fn">
+      <div class="fn-stage"><div class="fn-dot" style="background:var(--blue)"></div>Top of Funnel &mdash; Leads</div>
+      <ul>
+        <li>Lead volume is healthy at <strong>255 this week</strong> &mdash; a 5-week high &mdash; so marketing reach is not the issue</li>
+        <li><strong>CA generated 88 leads (34.5%)</strong> for the second consecutive week with near-identical poor conversion; this is a structural routing problem, not a campaign problem</li>
+        <li>AZ generated only 24 leads but converted 19 to estimates (79.2%) &mdash; <strong>3x higher quality per lead</strong> than CA&apos;s 13.6%</li>
+        <li><strong>TX leads are rising</strong> (3 &rarr; 11 &rarr; 16 over 3 weeks) with zero conversion infrastructure to absorb them</li>
+      </ul>
+    </div>
+    <div class="fn">
+      <div class="fn-stage"><div class="fn-dot" style="background:var(--amber)"></div>Mid-Funnel &mdash; Estimate Rate</div>
+      <ul>
+        <li>The 4-week L&rarr;E collapse is now confirmed as a <strong>systemic failure</strong>, not weekly variance</li>
+        <li><strong>CA: 88 leads &rarr; 12 est (13.6%)</strong> for the second consecutive week &mdash; 76 uncaptured leads at ~$230K in theoretical pipeline</li>
+        <li><strong>TX: 16 leads &rarr; 1 estimate (6.3%)</strong> &mdash; effectively zero conversion for the second consecutive week</li>
+        <li>AZ at <strong>79.2%</strong> remains the benchmark; all other markets are operating at a fraction of this rate</li>
+      </ul>
+    </div>
+    <div class="fn">
+      <div class="fn-stage"><div class="fn-dot" style="background:var(--green)"></div>Bottom-Funnel &mdash; Close Rate</div>
+      <table class="bkt">
+        <thead><tr><th>Mkt</th><th>Est</th><th>Close</th><th>Rate</th></tr></thead>
+        <tbody>
+          <tr><td>OTHER</td><td>5</td><td>3</td><td><span class="rp rp-hi">60.0%</span></td></tr>
+          <tr><td>NV</td><td>12</td><td>7</td><td><span class="rp rp-hi">58.3%</span></td></tr>
+          <tr><td>AZ</td><td>19</td><td>5</td><td><span class="rp rp-md">26.3%</span></td></tr>
+          <tr><td>CA</td><td>12</td><td>2</td><td><span class="rp rp-lo">16.7%</span></td></tr>
+          <tr><td>TX</td><td>1</td><td>0</td><td><span class="rp rp-z">0%</span></td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:12px;color:#666;line-height:1.6;margin-top:4px">Close rate is actually <em>improving</em> over 4 weeks (26.4% &rarr; 29.8% &rarr; 37.0% &rarr; 34.7%). The bottom-funnel is not the problem. Fixing the mid-funnel will deliver more revenue than any sales coaching initiative.</div>
+    </div>
+  </div>
+
+  <div class="sub-hdr">3 &mdash; Strategic Recommendations</div>
+  <div class="rc-g">
+    <div class="rc">
+      <div class="rc-n">Rec 01</div>
+      <div class="rc-t">Capital Reallocation &mdash; Urgent</div>
+      <div class="rc-h">Pause TX Google, cut Meta broad campaigns 40%, redirect $2K into AZ now</div>
+      <div class="rc-b">TX has generated <strong>$0 in revenue for 2 consecutive weeks</strong> on $2,113 in cumulative spend. Its W1-W2 "100x ROI" was driven by two large J Kerr and David Mauney deals &mdash; structural TX performance is near zero. Meta&apos;s 4-week avg ROI is 3.8x vs Google&apos;s 10.4x average. Pausing TX Google ($1,137/wk) and reducing broad Meta by 40% frees ~$4,400 in reallocation potential. <strong>AZ&apos;s 3-week ROI acceleration to 34.1x means every $1,000 redirected to AZ Google has generated $34,100 in the current environment.</strong></div>
+      <div class="rc-act">Pause TX Google. Cut All_US_Target_CPL and Minnesota Meta campaigns. Add $2,000/wk to AZ Google Search.</div>
+    </div>
+    <div class="rc">
+      <div class="rc-n">Rec 02</div>
+      <div class="rc-t">Systemic Fix &mdash; Highest Priority</div>
+      <div class="rc-h">Fix the mid-funnel process breakdown &mdash; this is the single largest lever in the business</div>
+      <div class="rc-b">The 4-week L&rarr;E decline from 42.4% to 19.2% is the company&apos;s most expensive unresolved problem. <strong>Every percentage point of recovery is worth approximately $6,800 in weekly revenue</strong> at current lead volume and close rates. Returning to W1&apos;s 42.4% rate would add ~$175K/week in revenue without spending another dollar on marketing.<br><br>Audit Monday.com lead-to-estimate time across all boards. If the bottleneck is speed-to-contact, implement a same-day SLA. If it is routing, assign dedicated inbound reps by state. Pull W1 estimate activity logs and compare rep contact behavior to current week.</div>
+      <div class="rc-act">Pull Monday.com estimate scheduling data for W1 vs this week. Identify the process change that occurred between Mar 2-8 and Mar 9-15 when the rate first collapsed.</div>
+    </div>
+    <div class="rc">
+      <div class="rc-n">Rec 03</div>
+      <div class="rc-t">Sales Coaching &mdash; AZ Close Gap</div>
+      <div class="rc-h">Diagnose AZ&apos;s 26.3% close rate before scaling spend &mdash; but do not delay the budget shift</div>
+      <div class="rc-b">AZ&apos;s estimate-to-close rate (26.3%) is the lowest of any producing market despite the best mid-funnel conversion (79.2%). <strong>If AZ matched NV&apos;s 58.3% close rate</strong>, this week&apos;s 19 estimates would have produced 11 closes instead of 5 &mdash; an additional $66K in revenue at the team&apos;s avg deal size.<br><br>The capital reallocation to AZ should proceed immediately (AZ ROI is compelling even at 26.3% close). Simultaneously, review the last 14 lost AZ estimates for pricing vs. rep-skill patterns and brief the AZ rep(s) before next week.</div>
+      <div class="rc-act">Pull 14 lost AZ estimates. Identify if pricing, objection type, or specific rep is the pattern. Brief AZ team Monday before pipeline opens.</div>
+    </div>
+  </div>
+</div>
+
+<!-- 06 ATTRIBUTION LOG -->
+<div class="sec" id="s06">
+  <div class="sec-hdr"><span class="sec-num">06</span><span class="sec-ttl">Attribution Recovery Log</span></div>
+  <div class="action-title">91.1% of revenue attributed after two-stage recovery &mdash; 1 deal ($14K) pending rep confirmation, 1 deal ($10.5K) rep field blank in Slack</div>
+  <div class="card0">
+    <table>
+      <thead>
+        <tr><th>Client</th><th>Rep</th><th>Deal</th><th>Slack Source</th><th>Stage</th><th>Final Source</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Shekhar Varanasi</strong></td><td>J Kerr</td><td>$10,500</td>
+          <td style="color:var(--muted)">Unknown</td>
+          <td><span class="res-badge res-a">A &mdash; Website Sheet</span></td>
+          <td><strong style="color:var(--green)">Google</strong></td>
+          <td style="font-size:12px;color:var(--muted)">Exact match; google/cpc; Perf Max CA</td>
+        </tr>
+        <tr>
+          <td><strong>Frank Browne</strong></td><td>J Kerr</td><td>$4,581</td>
+          <td style="color:var(--muted)">Unknown</td>
+          <td><span class="res-badge res-b">B &mdash; Monday.com</span></td>
+          <td><strong style="color:var(--green)">YouTube</strong></td>
+          <td style="font-size:12px;color:var(--muted)">Other States board; status_16 = YouTube</td>
+        </tr>
+        <tr>
+          <td><strong>Mike Hartley</strong></td><td>Sindy Thonhoff</td><td>$5,530</td>
+          <td style="color:var(--muted)">Unknown</td>
+          <td><span class="res-badge res-b">B &mdash; Monday.com</span></td>
+          <td><strong style="color:var(--green)">Facebook</strong></td>
+          <td style="font-size:12px;color:var(--muted)">Sales CA board; status_16 = Facebook</td>
+        </tr>
+        <tr>
+          <td><strong>Jazzmin Powell</strong></td><td>Adam Rogers</td><td>$14,000</td>
+          <td style="color:var(--muted)">Unknown</td>
+          <td><span class="res-badge res-u">Partial</span></td>
+          <td><strong style="color:var(--amber)">Organic / Direct</strong></td>
+          <td style="font-size:12px;color:var(--muted)">Found in sheet Mar 27 Phoenix &mdash; no UTM. Confirm with Adam Rogers.</td>
+        </tr>
+        <tr>
+          <td><strong>Manuel Balbas</strong></td>
+          <td style="color:var(--red)">MISSING</td>
+          <td>$10,500</td>
+          <td>Google (Slack)</td>
+          <td><span class="res-badge res-a">Pre-tagged</span></td>
+          <td><strong style="color:var(--green)">Google</strong></td>
+          <td style="font-size:12px;color:var(--muted)">Source confirmed; rep field blank &mdash; identify rep &amp; update Monday.com</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="padding:14px;display:flex;gap:24px;border-top:1px solid var(--border);flex-wrap:wrap">
+      <div style="font-size:13px;color:var(--muted)">Attribution rate: <strong style="color:var(--green);font-size:16px;font-family:'Barlow Condensed',sans-serif">91.1%</strong></div>
+      <div style="font-size:13px;color:var(--muted)">Unresolved: <strong style="color:var(--amber)">$14,000</strong> (Jazzmin Powell)</div>
+      <div style="font-size:13px;color:var(--muted)">Unattributed rep: <strong style="color:var(--red)">$10,500</strong> (Manuel Balbas)</div>
+    </div>
+  </div>
+</div>
+
+<div class="note">
+  <strong style="color:var(--amber)">Assumptions &amp; Data Notes:</strong><br>
+  1. Historical data (Mar 2–22) sourced from prior weekly HTML reports. Mar 23–29 revenue ($177,710) and deal count (23) sourced from Slack SOLD! messages; lead/estimate/spend data unavailable for that week.<br>
+  2. 4-week averages exclude Mar 23–29 week where spend and lead/est data is unavailable.<br>
+  3. Google ROI updated to 10.7x post-attribution: Shekhar Varanasi ($10,500) confirmed Google via UTM; Manuel Balbas ($10,500) via Slack tag.<br>
+  4. Facebook updated to 3 deals/$17,357 after Mike Hartley resolved via Monday.com Sales CA board.<br>
+  5. YouTube new source this week: Frank Browne ($4,581) via Monday.com Other States board.<br>
+  6. Jazzmin Powell ($14,000): found in website leads with no UTM — Organic/Direct. Confirm source with Adam Rogers.<br>
+  7. Manuel Balbas ($10,500 NV, 2nd Order): rep field blank in Slack bot. Identify and update Monday.com.
+</div>
+
+</div><!-- /page -->
+
+<script>
+// ── DATA ────────────────────────────────────────────────────────────────
+const WK = ['Mar 2–8','Mar 9–15','Mar 16–22','Mar 23–29','Mar 30–Apr 5'];
+const WK_SHORT = ['2/8','3/15','3/22','3/29','4/5'];
+const REV  = [207807, 145985, 151859, 177710, 148610];
+const SPEND= [13776,  12854,  13345,  null,   15841];
+const LE   = [42.4,   23.7,   21.5,   null,   19.2];
+const EC   = [26.4,   29.8,   37.0,   null,   34.7];
+const ROI  = [14.1,   11.4,   11.4,   null,   9.4];
+
+const AZ_ROI= [9.4,  1.2, 21.4, null, 34.1];
+const NV_ROI= [12.7, 15.3, 12.0, null, 10.4];
+const CA_ROI= [11.5, 3.3,  8.1,  null, 3.2];
+const TX_ROI= [100.8,151.6, 0,   null, 0];
+
+// ── SANKEY ──────────────────────────────────────────────────────────────
+google.charts.load('current',{packages:['sankey']});
+google.charts.setOnLoadCallback(function(){
+  var d=new google.visualization.DataTable();
+  d.addColumn('string','From');d.addColumn('string','To');d.addColumn('number','W');
+  d.addRows([
+    ['Total Leads (255)','Estimated (49)',49],
+    ['Total Leads (255)','Not Estimated (206)',206],
+    ['Estimated (49)','Closed (17)',17],
+    ['Estimated (49)','Not Closed (32)',32],
+  ]);
+  new google.visualization.Sankey(document.getElementById('sankey_div')).draw(d,{
+    width:'100%',height:260,
+    sankey:{node:{colors:['#4a9fd4','#f0a500','#333333','#3dba72','#222222'],
+      label:{color:'#f0f0f0',fontName:'Barlow Condensed',fontSize:13,bold:true},
+      width:18,nodePadding:44},link:{colorMode:'gradient'}},
+    backgroundColor:'transparent'});
+});
+
+// ── TOGGLE ───────────────────────────────────────────────────────────────
+function showP(id,btn){
+  document.querySelectorAll('.cp').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tog').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');btn.classList.add('on');
+}
+
+Chart.defaults.color='#666';Chart.defaults.font.family='Barlow Condensed';
+const ng={display:false};
+
+// Revenue & Spend (5-week)
+new Chart(document.getElementById('trendC'),{type:'bar',
+  data:{labels:WK_SHORT,
+    datasets:[
+      {label:'Revenue',data:REV,backgroundColor:REV.map((_,i)=>i===4?'rgba(230,53,24,.8)':'rgba(230,53,24,.3)'),yAxisID:'y',order:2,borderRadius:2},
+      {label:'Mktg Spend',data:SPEND,backgroundColor:SPEND.map((_,i)=>i===4?'rgba(74,159,212,.7)':'rgba(74,159,212,.3)'),yAxisID:'y',order:2,borderRadius:2},
+    ]},
+  options:{responsive:true,
+    plugins:{legend:{labels:{color:'#888',font:{size:12},boxWidth:12}},tooltip:{callbacks:{label:c=>c.dataset.label+': $'+c.raw?.toLocaleString()}}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#888',font:{size:12}}},
+      y:{position:'left',grid:{color:'#1a1a1a'},ticks:{color:'#888',font:{size:11},callback:v=>'$'+(v/1000).toFixed(0)+'K'},title:{display:true,text:'$',color:'#444',font:{size:11}}}
+    }}
+});
+
+// L→E rate trend
+new Chart(document.getElementById('leC'),{type:'line',
+  data:{labels:WK_SHORT.filter((_,i)=>i!==3),
+    datasets:[
+      {label:'Lead→Est %',data:LE.filter(v=>v!==null),borderColor:'#e63518',backgroundColor:'rgba(230,53,24,.08)',tension:.3,pointRadius:5,pointBackgroundColor:LE.filter(v=>v!==null).map((_,i)=>i===3?'#e63518':'#555'),fill:true},
+      {label:'Est→Close %',data:EC.filter(v=>v!==null),borderColor:'#3dba72',backgroundColor:'rgba(61,186,114,.05)',tension:.3,pointRadius:4,fill:true},
+    ]},
+  options:{responsive:true,
+    plugins:{legend:{labels:{color:'#888',font:{size:12},boxWidth:12}}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#888',font:{size:12}}},
+      y:{grid:{color:'#1a1a1a'},ticks:{color:'#888',font:{size:11},callback:v=>v+'%'},min:0,max:55}
+    }}
+});
+
+// ROI by State (grouped bars, excludes Mar 23-29)
+const roiWks = ['Mar 2–8','Mar 9–15','Mar 16–22','Apr 5'];
+new Chart(document.getElementById('roiStC'),{type:'bar',
+  data:{labels:roiWks,
+    datasets:[
+      {label:'AZ',data:[9.4,1.2,21.4,34.1],backgroundColor:['#333','#333','#333','var(--red)']
+        .map((c,i)=>i===3?'rgba(230,53,24,.8)':'rgba(230,53,24,.25)'),borderRadius:2},
+      {label:'NV',data:[12.7,15.3,12.0,10.4],backgroundColor:'rgba(74,159,212,.35)',borderRadius:2},
+      {label:'CA',data:[11.5,3.3,8.1,3.2],backgroundColor:'rgba(240,165,0,.3)',borderRadius:2},
+      {label:'TX',data:[100.8,151.6,0,0],backgroundColor:'rgba(100,100,100,.3)',borderRadius:2},
+    ]},
+  options:{responsive:true,
+    plugins:{legend:{labels:{color:'#888',font:{size:12},boxWidth:12}}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#888',font:{size:12}}},
+      y:{grid:{color:'#1a1a1a'},ticks:{color:'#888',font:{size:11},callback:v=>v+'x'},max:60,title:{display:true,text:'ROI (TX capped at 60x for readability)',color:'#444',font:{size:10}}}
+    }}
+});
+
+// Rep trends
+new Chart(document.getElementById('repTrendC'),{type:'line',
+  data:{labels:WK_SHORT,
+    datasets:[
+      {label:'Adam Rogers',data:[27392,6800,72133,35000,55620],borderColor:'#e63518',tension:.3,pointRadius:4,fill:false},
+      {label:'Sindy Thonhoff',data:[55189,32319,30527,35648,40582],borderColor:'#3dba72',tension:.3,pointRadius:4,fill:false},
+      {label:'Nick Stramaglio',data:[10940,38940,24820,90730,12350],borderColor:'#f0a500',tension:.3,pointRadius:4,fill:false},
+      {label:'J Kerr',data:[29392,41406,9350,5178,15081],borderColor:'#4a9fd4',tension:.3,pointRadius:4,fill:false},
+      {label:'David Mauney',data:[54110,0,0,7390,11827],borderColor:'#888',tension:.3,pointRadius:4,fill:false,borderDash:[4,3]},
+    ]},
+  options:{responsive:true,
+    plugins:{legend:{labels:{color:'#888',font:{size:12},boxWidth:12}},tooltip:{callbacks:{label:c=>' $'+c.raw.toLocaleString()}}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#888',font:{size:12}}},
+      y:{grid:{color:'#1a1a1a'},ticks:{color:'#888',font:{size:11},callback:v=>'$'+(v/1000).toFixed(0)+'K'}}
+    }}
+});
+
+// Revenue by source (current week)
+new Chart(document.getElementById('srcRevC'),{type:'bar',
+  data:{labels:['Google','Returning Client','Facebook','Organic/Direct','YouTube','Referral'],
+    datasets:[{data:[79872,30250,17357,14000,4581,2550],
+      backgroundColor:['rgba(230,53,24,.82)','rgba(100,100,100,.55)','rgba(100,100,100,.45)','rgba(100,100,100,.38)','rgba(100,100,100,.3)','rgba(100,100,100,.22)'],
+      borderRadius:2}]},
+  options:{indexAxis:'y',responsive:true,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.raw.toLocaleString()}}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#888',font:{size:11},callback:v=>'$'+(v/1000).toFixed(0)+'K'}},
+      y:{grid:{display:false},ticks:{color:'#ccc',font:{size:13,weight:'600'}}}
+    }}
+});
+
+// ── CSV DOWNLOAD ─────────────────────────────────────────────────────────
+function dlCSV(){
+  let c='BOSS SECURITY SCREENS - WEEKLY REPORT Mar 30 - Apr 5 2026\n\n';
+  c+='5-WEEK SUMMARY\nWeek,Revenue,Deals,Leads,Estimates,L->E%,E->Close%,Spend,ROI\n';
+  [['Mar 2-8',207807,23,205,87,'42.4%','26.4%',13776,'14.1x'],
+   ['Mar 9-15',145985,14,198,47,'23.7%','29.8%',12854,'11.4x'],
+   ['Mar 16-22',151859,20,251,54,'21.5%','37.0%',13345,'11.4x'],
+   ['Mar 23-29',177710,23,'—','—','—','—','—','—'],
+   ['Mar 30-Apr 5',148610,17,255,49,'19.2%','34.7%',15841,'9.4x']
+  ].forEach(r=>c+=r.join(',')+'\n');
+  c+='\nCURRENT WEEK STATE SUMMARY\nState,Leads,Estimates,Deals,Revenue,FB Spend,Google Spend,Total Spend,ROI\n';
+  [['NV',38,12,7,60552,3156.73,2654.53,5811.26,'10.4x'],
+   ['AZ',24,19,5,55620,803.01,827.95,1630.96,'34.1x'],
+   ['CA',88,12,2,16030,2838.88,2172.61,5011.49,'3.2x'],
+   ['TX',16,1,0,0,635.35,1136.91,1772.26,'Loss'],
+   ['OTHER',89,5,3,16408.20,926.96,687.85,1614.81,'10.2x'],
+   ['TOTAL',255,49,17,148610.20,8360.93,7479.85,15840.78,'9.4x']
+  ].forEach(r=>c+=r.join(',')+'\n');
+  c+='\nSALES BY REP\nRep,Deals,Revenue,Avg Deal,Revenue Share\n';
+  [['Adam Rogers',5,55620,11124,'37.4%'],['Sindy Thonhoff',3,40582,13527,'27.3%'],
+   ['J Kerr',2,15081.20,7540.60,'10.2%'],['Nick Stramaglio',3,12350,4116.67,'8.3%'],
+   ['David Mauney',2,11827,5913.50,'7.9%'],['Unattributed',1,10500,10500,'7.1%'],
+   ['Deana Buckley',1,2650,2650,'1.8%']
+  ].forEach(r=>c+=r.join(',')+'\n');
+  c+='\nLEAD SOURCE ROI\nSource,Deals,Revenue,Avg Deal,Mktg Spend,ROI\n';
+  [['Google',6,79872,13312,7479.85,'10.7x'],['Returning Client',5,30250,6050,'—','—'],
+   ['Facebook',3,17357,5786,8360.93,'2.1x'],['Organic/Direct',1,14000,14000,'—','—'],
+   ['YouTube',1,4581,4581,'—','—'],['Referral',1,2550,2550,'—','—']
+  ].forEach(r=>c+=r.join(',')+'\n');
+  const b=new Blob([c],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);
+  a.download='boss_data_033026_040526.csv';a.click();
+}
+</script>
+</body>
+</html>
